@@ -8,6 +8,7 @@ import type { StageId } from "@/lib/crm-types";
 import { useServerFn } from "@tanstack/react-start";
 import { unlockCrm } from "@/lib/crm-auth.functions";
 import { setPreviewSessionToken } from "@/lib/crm-preview-session";
+import { CrmSidebar } from "./CrmSidebar";
 
 export type CrmAccess = {
   level: "limited" | "full";
@@ -37,7 +38,42 @@ export function clearStoredAccess() {
   setPreviewSessionToken(null);
 }
 
-export function CrmAuthGate({ onUnlock }: { onUnlock: (access: CrmAccess) => void }) {
+export function CrmAuthGate(props: { onUnlock: (access: CrmAccess) => void }) {
+  // Versão experimental em modo demonstração: não há servidor nem senha; mostra um aviso no lugar do login.
+  if (import.meta.env.VITE_UX_DEMO === "1") return <DemoUnavailable />;
+  return <CrmPasswordGate {...props} />;
+}
+
+const DEMO_READY = [
+  ["/dashboard", "Visão Geral"], ["/", "CRM (Pipeline e card do lead)"], ["/clientes", "Clientes"], ["/financeiro", "Financeiro"],
+  ["/financeiro/recebimentos", "Controle de Recebimentos"], ["/pos-venda", "Gestão de Clientes"], ["/configuracoes", "Configurações"],
+] as const;
+
+function DemoUnavailable() {
+  return (
+    <div className="flex min-h-screen bg-background">
+      <CrmSidebar />
+      <main className="flex min-w-0 flex-1 items-center justify-center p-6">
+        <div className="surface lab-rise max-w-lg rounded-2xl border bg-card p-8 text-center">
+          <span className="mx-auto flex size-12 items-center justify-center rounded-2xl bg-primary/10 text-primary"><Lock className="size-5" /></span>
+          <h1 className="mt-4 text-xl font-semibold tracking-tight">Esta tela ainda não tem dados de demonstração</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            No modo demonstração não existe senha: o sistema roda sem servidor e sem banco de dados. Esta tela depende de dados reais
+            (integrações, tarefas, agenda ou campanhas), por isso fica indisponível aqui. Nada foi alterado.
+          </p>
+          <p className="mt-5 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Telas com dados fictícios</p>
+          <div className="mt-2 flex flex-wrap justify-center gap-2">
+            {DEMO_READY.map(([to, label]) => (
+              <a key={to} href={to} className="rounded-full border bg-background px-3 py-1.5 text-xs font-medium transition-colors hover:border-primary/40 hover:text-primary">{label}</a>
+            ))}
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}
+
+function CrmPasswordGate({ onUnlock }: { onUnlock: (access: CrmAccess) => void }) {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");

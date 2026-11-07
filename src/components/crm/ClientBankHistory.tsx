@@ -1,0 +1,8 @@
+import { useQuery } from '@tanstack/react-query';
+import { useServerFn } from '@tanstack/react-start';
+import { getClientBankHistory } from '@/lib/bank-batch.functions';
+export function ClientBankHistory({clientId}:{clientId:string}) {
+ const read=useServerFn(getClientBankHistory);
+ const q=useQuery({queryKey:['client-bank-history',clientId],queryFn:()=>read({data:{clientId}}),retry:false});
+ return <section className="border-t py-5"><h2 className="mb-3 font-semibold">Recebimentos bancários vinculados</h2>{q.isError?<p role="alert" className="text-sm text-destructive">Não foi possível ler os recebimentos.</p>:q.isPending?<p className="text-sm text-muted-foreground">Carregando…</p>:<div className="overflow-x-auto"><table className="w-full text-left text-sm"><thead><tr><th className="p-2">Data</th><th>Valor</th><th>Origem</th><th>Situação</th><th>Transação</th></tr></thead><tbody>{q.data.map(r=><tr key={r.id} className="border-t"><td className="p-2 whitespace-nowrap">{r.date?new Date(r.date).toLocaleDateString('pt-BR'):'—'}</td><td className="whitespace-nowrap">{(r.amount/100).toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}</td><td>Banco · {r.description??'Pix'}</td><td>{r.status}</td><td className="break-all font-mono text-xs">{r.id}</td></tr>)}</tbody></table>{!q.data.length&&<p className="py-4 text-sm text-muted-foreground">Nenhum recebimento bancário vinculado.</p>}</div>}</section>;
+}

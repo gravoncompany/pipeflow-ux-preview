@@ -1,0 +1,6 @@
+CREATE OR REPLACE FUNCTION public.claim_gravon_reserved_echo(p_instance text,p_jid text,p_id text,p_body text) RETURNS boolean LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$ DECLARE r public.gravon_outbound_reservations; BEGIN
+ IF length(coalesce(p_id,'')) NOT BETWEEN 1 AND 200 THEN RETURN false; END IF;
+ SELECT * INTO r FROM public.gravon_outbound_reservations WHERE instance=p_instance AND remote_jid=p_jid AND (provider_id=p_id OR echo_id=p_id OR (provider_id IS NULL AND echo_id IS NULL AND state IN ('sending','unknown') AND body=p_body AND created_at>=now()-interval '60 seconds' AND created_at<=now())) ORDER BY created_at LIMIT 1 FOR UPDATE;
+ IF r.id IS NULL THEN RETURN false; END IF; IF r.echo_id IS NULL THEN UPDATE public.gravon_outbound_reservations SET echo_id=p_id WHERE id=r.id; END IF; RETURN true;
+END $$;
+REVOKE ALL ON FUNCTION public.claim_gravon_reserved_echo(text,text,text,text) FROM PUBLIC,anon,authenticated; GRANT EXECUTE ON FUNCTION public.claim_gravon_reserved_echo(text,text,text,text) TO service_role;

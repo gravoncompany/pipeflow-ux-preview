@@ -1,0 +1,3 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { CustomerSuccessWorkspace } from "@/components/crm/CustomerSuccessWorkspace";
+export const Route = createFileRoute("/pos-venda/risco")({ head: () => ({ meta: [{ title: "Clientes em Risco — Pipeflow" }, { name: "description", content: "Acompanhamento prioritário e planos de recuperação dos clientes da Gravon." }, { property: "og:title", content: "Clientes em Risco — Pipeflow" }, { property: "og:description", content: "Motivos, evidências e tarefas internas para recuperação do relacionamento." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }), component: () => <CustomerSuccessWorkspace view="risco" /> });

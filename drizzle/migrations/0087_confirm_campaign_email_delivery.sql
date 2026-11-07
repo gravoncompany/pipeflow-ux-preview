@@ -1,0 +1,1 @@
+COMMENT ON TABLE public.crm_campaign_deliveries IS 'Uma linha por campanha+contato, reservada antes da chamada ao provedor. Desconhecido nunca é reenviado.';

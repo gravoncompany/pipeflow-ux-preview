@@ -1,0 +1,45 @@
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { CS_WEIGHTS, healthScore, parseManagement, clientFinance, contractMrr, monthlyAmount, renewalAlert, renewalDays, scoreTrend, type Criteria } from "./customer-success-management";
+const today = "2026-11-05", now = Date.parse("2026-11-05T15:00:00Z");
+const criterion = (value: number) => ({ value, reason: "Evidência real identificada", source: "Registro revisado do cliente", evaluatedAt: "2026-11-05T00:00:00-03:00" });
+const criteria = (value: number): Criteria => ({ satisfaction: criterion(value), finance: criterion(value), engagement: criterion(value), results: criterion(value), contract: criterion(value) });
+test("user's five weights total 100", () => assert.deepEqual(CS_WEIGHTS, { satisfaction: 30, finance: 25, engagement: 20, results: 15, contract: 10 }));
+test("80–100 healthy; exact 80 boundary", () => { assert.equal(healthScore(criteria(80), now).health, "saudavel"); assert.equal(healthScore(criteria(100), now).score, 100); });
+test("60–79 attention; exact 60 and 79 boundaries", () => { assert.equal(healthScore(criteria(60), now).health, "atencao"); assert.equal(healthScore(criteria(79), now).health, "atencao"); });
+test("0–59 at risk; exact 0 and 59 boundaries", () => { assert.equal(healthScore(criteria(0), now).health, "em_risco"); assert.equal(healthScore(criteria(59), now).health, "em_risco"); });
+test("missing criteria never receive maximum/minimum; normalized only evaluated weights", () => { const c = { ...criteria(80), satisfaction: null }; assert.equal(healthScore(c, now).score, 80); assert.equal(healthScore(c, now).coverage, 70); });
+test("insufficient coverage returns not evaluated, not healthy or risk", () => { const c = { ...criteria(100), satisfaction: null, finance: null }; const s = healthScore(c, now); assert.equal(s.coverage, 45); assert.equal(s.score, null); assert.equal(s.health, null); });
+test("expired and future evidence cannot classify current health", () => { const c = criteria(100); for (const v of Object.values(c)) if (v) v.evaluatedAt = "2026-01-01T00:00:00Z"; assert.equal(healthScore(c, now).score, null); c.finance = { ...criterion(100), evaluatedAt: "2027-01-01T00:00:00Z" }; assert.equal(healthScore(c, now).coverage, 0); });
+test("status account independent of commercial, health, contracts", () => { const m = parseManagement({ accountStatus: "ativo", commercialStatus: "cancelamento" }); assert.equal(m.accountStatus, "ativo"); assert.equal(m.commercialStatus, "cancelamento"); assert.deepEqual(m.contracts, []); });
+test("no charges/payments is not delinquency or financial satisfaction", () => { const f = clientFinance([], [], today); assert.equal(f.overdueCents, 0); assert.equal(f.criterion, null); });
+test("partial confirmed receipt subtracts only linked amount from overdue charge", () => { const f = clientFinance([{ id: "a", amount: 1500, due_date: "2026-11-01", status: "pendente" }], [{ id: "p", charge_id: "a", amount: 500, paid_at: "2026-11-03", confirmed_by: "Gestor" }], today); assert.equal(f.overdueCents, 100000); assert.equal(f.confirmedCents, 50000); });
+test("planned, future and unconfirmed payments never count as received", () => { const c = [{ id: "a", amount: 1500, due_date: "2026-12-01", status: "pendente" }]; const p = [{ id: "p", charge_id: "a", amount: 500, paid_at: "2026-11-03", confirmed_by: "" }, { id: "q", charge_id: "a", amount: 1000, paid_at: "2026-12-01", confirmed_by: "Gestor" }]; assert.equal(clientFinance(c, p, today).confirmedCents, 0); });
+test("dedupe persistent receipt id, never equal date/amount of distinct payments", () => { const c = [{ id: "a", amount: 3000, due_date: today, status: "pendente" }]; const p = { id: "p", charge_id: "a", amount: 1500, paid_at: today, confirmed_by: "Gestor" }; assert.equal(clientFinance(c, [p, p], today).confirmedCents, 150000); assert.equal(clientFinance(c, [p, { ...p, id: "q" }], today).confirmedCents, 300000); });
+const contract = { id: "00000000-0000-4000-8000-000000000001", title: "Gestão", start: "2026-01-01", renewal: null, termMonths: 12, amountCents: 150000, billing: "mensal", billingMonths: 1, status: "ativo", responsible: "Gestor", note: "Contrato revisado" };
+test("contract MRR uses monthly normalization, ARR estimated *12; charges irrelevant", () => { const m = parseManagement({ contracts: [{ ...contract, amountCents: 450000, billing: "trimestral" }] }); const mrr = contractMrr(m.contracts, today); assert.equal(mrr, 150000); assert.equal(mrr * 12, 1800000); });
+test("paused/cancelled/closed/future/expired contracts not contracted active MRR", () => { const m = parseManagement({ contracts: [{ ...contract, status: "cancelado" }, { ...contract, id: "00000000-0000-4000-8000-000000000002", start: "2027-01-01" }] }); assert.equal(contractMrr(m.contracts, today), 0); });
+test("unknown renewal stays unknown, never inferred from billing", () => { assert.equal(renewalDays(null, today), null); assert.equal(renewalAlert(null, today), "Não informada"); assert.equal(parseManagement({ contracts: [contract] }).contracts[0].renewal, null); });
+test("renewal alerts exact 30/15/7 days and expired; same day is due not expired", () => { assert.equal(renewalAlert("2026-12-05", today), "Até 30 dias"); assert.equal(renewalAlert("2026-11-20", today), "Até 15 dias"); assert.equal(renewalAlert("2026-11-12", today), "Até 7 dias"); assert.equal(renewalAlert("2026-11-04", today), "Vencido"); assert.equal(renewalDays(today, today), 0); });
+test("7/30/90 comparison uses actual prior record, never invented trend", () => { const history = [{ created_at: "2026-10-01T00:00:00Z", score: 60 }, { created_at: "2026-08-01T00:00:00Z", score: 50 }]; assert.equal(scoreTrend(80, history, 7, now), 20); assert.equal(scoreTrend(80, history, 30, now), 20); assert.equal(scoreTrend(80, history, 90, now), 30); assert.equal(scoreTrend(80, [], 30, now), null); });
+test("invalid dates, duplicate contracts and unsupported scores rejected", () => { assert.throws(() => parseManagement({ contracts: [{ ...contract, renewal: "2026-02-30" }] })); assert.throws(() => parseManagement({ contracts: [contract, contract] })); assert.throws(() => parseManagement({ criteria: { finance: criterion(101) } })); });
+test("Meta Ads quinzenal sem contrato formal e sem renovação é salvo e entra na MRR", () => {
+  const m = parseManagement({ contracts: [{ id: "6f1c1e2a-1111-4c3b-9d7e-1a2b3c4d5e6f", title: "Meta Ads", start: null, renewal: null, termMonths: null, amountCents: 100000, billing: "quinzenal", billingMonths: 1, status: "ativo", responsible: "", note: "Acordo recorrente", kind: "servico_sem_contrato" }] });
+  const mrr = contractMrr(m.contracts, "2026-11-05");
+  assert.ok(Math.abs(mrr - 100000 * 365.2425 / 15 / 12) < 0.01);
+  assert.ok(Math.abs(mrr * 12 / 100 - 24349.5) < 0.01);
+});
+test("normalização mensal por periodicidade e pagamento único fora da MRR", () => {
+  const base = { amountCents: 1200, billingMonths: 1, billingDays: null, kind: "contrato_formal" as const };
+  assert.equal(monthlyAmount({ ...base, billing: "semanal" }), 5200);
+  assert.equal(monthlyAmount({ ...base, billing: "bimensal" }), 2400);
+  assert.equal(monthlyAmount({ ...base, billing: "trimestral" }), 400);
+  assert.equal(monthlyAmount({ ...base, billing: "semestral" }), 200);
+  assert.equal(monthlyAmount({ ...base, billing: "anual" }), 100);
+  assert.equal(monthlyAmount({ ...base, billing: "unico" }), 0);
+  assert.equal(monthlyAmount({ ...base, billing: "mensal", kind: "pontual" }), 0);
+});
+test("acordo por prazo indeterminado segue ativo após data de renovação antiga", () => {
+  const m = parseManagement({ contracts: [{ id: "6f1c1e2a-2222-4c3b-9d7e-1a2b3c4d5e6f", title: "Gestão", start: "2026-01-01", renewal: "2026-02-01", termMonths: null, amountCents: 50000, billing: "mensal", billingMonths: 1, status: "ativo", responsible: "", note: "", indefinite: true }] });
+  assert.equal(contractMrr(m.contracts, "2026-11-05"), 50000);
+});

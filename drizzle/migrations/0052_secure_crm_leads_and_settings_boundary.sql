@@ -1,0 +1,13 @@
+ALTER TABLE public.leads ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.crm_settings ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS leads_public_select ON public.leads;
+DROP POLICY IF EXISTS leads_public_insert ON public.leads;
+DROP POLICY IF EXISTS leads_public_update ON public.leads;
+DROP POLICY IF EXISTS leads_public_delete ON public.leads;
+DROP POLICY IF EXISTS crm_settings_public_select ON public.crm_settings;
+DROP POLICY IF EXISTS crm_settings_public_insert ON public.crm_settings;
+DROP POLICY IF EXISTS crm_settings_public_update ON public.crm_settings;
+REVOKE ALL PRIVILEGES ON TABLE public.leads, public.crm_settings FROM PUBLIC, anon, authenticated;
+GRANT ALL PRIVILEGES ON TABLE public.leads, public.crm_settings TO service_role;
+COMMENT ON TABLE public.crm_settings IS 'Private CRM settings: full signed CRM session required through server functions; no browser Data API access.';
+COMMENT ON TABLE public.leads IS 'Private CRM leads: signed CRM server functions enforce access scope and full-session-only deletion; existing service integration paths preserved.';

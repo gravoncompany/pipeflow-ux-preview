@@ -1,0 +1,28 @@
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+import { PGlite } from "@electric-sql/pglite";
+test("campaign drafts are private, revision guarded, auditable and never enqueue sends",async()=>{const db=new PGlite();try{
+ await db.exec("CREATE ROLE anon;CREATE ROLE authenticated;CREATE ROLE service_role;CREATE SCHEMA auth;CREATE FUNCTION auth.role() RETURNS text LANGUAGE sql AS $$SELECT coalesce(nullif(current_setting('request.jwt.claim.role',true),''),'service_role')$$;CREATE TABLE leads(id uuid PRIMARY KEY,email text,whatsapp text);");
+ await db.exec(await readFile("drizzle/migrations/0064_campaigns_private_drafts.sql","utf8"));
+ await db.exec(await readFile("drizzle/migrations/0065_campaign_consent_audit.sql","utf8"));
+ const lead="00000000-0000-4000-8000-000000000001";
+ await db.query("INSERT INTO leads VALUES($1,'sale@example.test','5541999990001')",[lead]);
+ await db.query("SELECT record_crm_campaign_consent($1,'email','sale@example.test','Evidência de teste',now(),false)",[lead]);
+ await db.query("SELECT record_crm_campaign_consent($1,'email','sale@example.test','Descadastro teste',now(),true)",[lead]);
+ await assert.rejects(db.query("SELECT record_crm_campaign_consent($1,'email','sale@example.test','Nova evidência',now(),false)",[lead]),/withdrawn_contact/);
+ await assert.rejects(db.query("SELECT record_crm_campaign_consent($1,'email','outro@example.test','Evidência teste',now(),false)",[lead]),/contact_changed/);
+ const payload={name:"Teste isolado",channel:"email",subject:"Assunto",body:"Mensagem",leadIds:[],scheduledAt:"2026-12-01T12:00:00Z"};
+ const created=(await db.query<{draft:{id:string;revision:number;state:string}}>("SELECT save_crm_campaign_draft(NULL,1,$1::jsonb) AS draft",[JSON.stringify(payload)])).rows[0].draft;
+ assert.equal(created.state,"draft");assert.equal(created.revision,1);
+ await db.query("SELECT save_crm_campaign_draft($1,1,$2::jsonb)",[created.id,JSON.stringify({...payload,body:"Edited"})]);
+ await assert.rejects(db.query("SELECT save_crm_campaign_draft($1,1,$2::jsonb)",[created.id,JSON.stringify(payload)]),/stale_or_locked/);
+ assert.equal((await db.query<{ok:boolean}>("SELECT cancel_crm_campaign($1,2) AS ok",[created.id])).rows[0].ok,true);
+ assert.equal((await db.query("SELECT * FROM crm_campaign_events")).rows.length,5);
+ const whatsapp={...payload,channel:"whatsapp",instanceReference:"Instância fictícia",leadIds:[lead]};
+ const wa=(await db.query<{draft:{id:string;state:string;instance_reference:string;scheduled_at:string}}>("SELECT save_crm_campaign_draft(NULL,1,$1::jsonb) AS draft",[JSON.stringify(whatsapp)])).rows[0].draft;
+ assert.equal(wa.instance_reference,"Instância fictícia");assert.equal(wa.state,"draft");assert.equal(new Date(wa.scheduled_at).toISOString(),"2026-12-01T12:00:00.000Z");
+ assert.equal((await db.query("SELECT * FROM crm_campaign_events WHERE kind IN ('scheduled','sending','accepted')")).rows.length,0);
+ for(const table of ["crm_campaigns","crm_campaign_templates","crm_campaign_permissions","crm_campaign_events"])for(const role of ["anon","authenticated"])assert.equal((await db.query<{ok:boolean}>("SELECT has_table_privilege($1,$2,'SELECT,INSERT,UPDATE,DELETE') AS ok",[role,table])).rows[0].ok,false);
+ await db.exec("SET request.jwt.claim.role='authenticated'");await assert.rejects(db.query("SELECT cancel_crm_campaign($1,3)",[created.id]),/access_denied/);
+ }finally{await db.close();}});

@@ -1,0 +1,3 @@
+CREATE OR REPLACE FUNCTION public.analysis_contact_snapshot(p_instance text,p_key text) RETURNS jsonb LANGUAGE sql STABLE SET search_path=public AS $$ SELECT jsonb_build_object('count',count(*),'digest',md5(coalesce(string_agg(md5(jsonb_build_object('id',message_id,'body',body,'fromMe',from_me,'sentAt',sent_at,'phone',phone,'media',media_type)::text),'' ORDER BY sent_at,message_id),''))) FROM public.whatsapp_messages WHERE instance=p_instance AND phone_key=p_key; $$;
+REVOKE ALL ON FUNCTION public.analysis_contact_snapshot(text,text) FROM PUBLIC,anon,authenticated;
+GRANT EXECUTE ON FUNCTION public.analysis_contact_snapshot(text,text) TO service_role;

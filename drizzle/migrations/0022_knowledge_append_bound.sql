@@ -1,0 +1,2 @@
+CREATE OR REPLACE FUNCTION public.check_commercial_knowledge_size() RETURNS trigger LANGUAGE plpgsql SET search_path=public AS $$ BEGIN IF NEW.entry_type='manual' AND (length(NEW.text) NOT BETWEEN 1 AND 8000 OR length(NEW.title) NOT BETWEEN 1 AND 160 OR NEW.entry_type NOT IN ('generated','manual')) THEN RAISE EXCEPTION 'knowledge_too_large_or_invalid'; END IF; RETURN NEW; END $$;
+CREATE TRIGGER check_commercial_knowledge_size BEFORE INSERT OR UPDATE ON public.ai_knowledge FOR EACH ROW EXECUTE FUNCTION public.check_commercial_knowledge_size();

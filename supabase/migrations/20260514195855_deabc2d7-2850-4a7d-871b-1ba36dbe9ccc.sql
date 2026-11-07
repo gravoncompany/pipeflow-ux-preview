@@ -1,0 +1,3 @@
+ALTER TABLE public.leads
+  ADD COLUMN IF NOT EXISTS website text NOT NULL DEFAULT '',
+  ADD COLUMN IF NOT EXISTS invested_traffic text NOT NULL DEFAULT '';

@@ -1,0 +1,3 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { CustomerSuccessWorkspace } from "@/components/crm/CustomerSuccessWorkspace";
+export const Route = createFileRoute("/pos-venda/renovacoes")({ head: () => ({ meta: [{ title: "Contratos e Renovações — Pipeflow" }, { name: "description", content: "Contratos dos clientes da Gravon, vigência, renovação e alertas de vencimento." }, { property: "og:title", content: "Contratos e Renovações — Pipeflow" }, { property: "og:description", content: "Renovações contratuais independentes das datas de cobrança financeira." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }), component: () => <CustomerSuccessWorkspace view="renovacoes" /> });

@@ -1,0 +1,4 @@
+ALTER TABLE public.leads
+  ADD COLUMN IF NOT EXISTS instagram text NOT NULL DEFAULT '',
+  ADD COLUMN IF NOT EXISTS revenue text NOT NULL DEFAULT '',
+  ADD COLUMN IF NOT EXISTS employees text NOT NULL DEFAULT '';

@@ -1,0 +1,306 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-highlight: var(--highlight);
+  --color-highlight-foreground: var(--highlight-foreground);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-wa: var(--wa);
+  --color-wa-strong: var(--wa-strong);
+  --color-wa-out: var(--wa-out);
+  --color-wa-in: var(--wa-in);
+  --color-wa-wallpaper: var(--wa-wallpaper);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-receipt-partial: var(--receipt-partial);
+  --color-receipt-pending: var(--receipt-pending);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-highlight: var(--sidebar-highlight);
+  --color-sidebar-panel: var(--sidebar-panel);
+  --color-sidebar-panel-border: var(--sidebar-panel-border);
+  --color-universe-backdrop: var(--universe-backdrop);
+}
+
+:root {
+  --radius: 0.75rem;
+  --background: oklch(0.985 0.005 240);
+  --foreground: oklch(0.21 0.03 250);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.21 0.03 250);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.21 0.03 250);
+  --primary: oklch(0.52 0.18 255);
+  --primary-foreground: oklch(0.99 0.005 240);
+  --secondary: oklch(0.96 0.01 250);
+  --secondary-foreground: oklch(0.25 0.04 255);
+  --muted: oklch(0.96 0.008 250);
+  --muted-foreground: oklch(0.5 0.025 255);
+  --accent: oklch(0.94 0.02 255);
+  --accent-foreground: oklch(0.25 0.04 255);
+  --destructive: oklch(0.6 0.22 25);
+  --destructive-foreground: oklch(0.99 0.005 240);
+  --border: oklch(0.92 0.01 250);
+  --input: oklch(0.92 0.01 250);
+  --ring: oklch(0.52 0.18 255);
+  /* Azul-claro/azul vibrante substitui o antigo dourado nos destaques. */
+  --highlight: oklch(0.62 0.17 245);
+  --highlight-foreground: oklch(0.38 0.14 255);
+  /* Gráficos: azul vibrante, azul-claro, verde, âmbar e grafite para separar indicadores. */
+  --chart-1: oklch(0.55 0.2 258);
+  --chart-2: oklch(0.72 0.12 230);
+  --chart-3: oklch(0.65 0.15 160);
+  --chart-4: oklch(0.75 0.15 65);
+  --chart-5: oklch(0.45 0.05 260);
+  /* Verde característico do WhatsApp, usado só nas mensagens das Conversas. */
+  --wa: oklch(0.66 0.14 165);
+  --wa-strong: oklch(0.45 0.11 165);
+  --wa-out: oklch(0.95 0.06 140);
+  --wa-in: oklch(1 0 0);
+  --wa-wallpaper: oklch(0.95 0.012 85);
+  --success: oklch(0.65 0.16 155);
+  --success-foreground: oklch(0.99 0.005 240);
+  --warning: oklch(0.78 0.15 70);
+  --warning-foreground: oklch(0.25 0.04 70);
+  --receipt-partial: oklch(0.65 0.18 50);
+  --receipt-pending: oklch(0.72 0.15 95);
+  /* Menu lateral azul-marinho escuro com texto branco e item ativo em azul vibrante. */
+  --sidebar: oklch(0.24 0.06 262);
+  --sidebar-foreground: oklch(0.98 0.005 250);
+  --sidebar-primary: oklch(0.6 0.2 258);
+  --sidebar-primary-foreground: oklch(0.99 0.005 240);
+  --sidebar-accent: oklch(0.31 0.06 262);
+  --sidebar-accent-foreground: oklch(0.99 0.005 240);
+  --sidebar-border: oklch(0.34 0.05 262);
+  --sidebar-ring: oklch(0.6 0.2 258);
+  --sidebar-highlight: oklch(0.82 0.11 248);
+  /* Caixas dentro do menu azul-marinho (ex.: WhatsApp): azul um pouco mais claro que o fundo. */
+  --sidebar-panel: oklch(0.36 0.08 260);
+  --sidebar-panel-border: oklch(0.45 0.08 258);
+  /* Fundo externo do Universo Pipeflow. */
+  --universe-backdrop: oklch(0.2 0.07 262);
+}
+
+.dark {
+  --background: oklch(0.16 0.02 255);
+  --foreground: oklch(0.97 0.005 240);
+  --card: oklch(0.21 0.03 255);
+  --card-foreground: oklch(0.97 0.005 240);
+  --popover: oklch(0.21 0.03 255);
+  --popover-foreground: oklch(0.97 0.005 240);
+  --primary: oklch(0.65 0.18 255);
+  --primary-foreground: oklch(0.16 0.02 255);
+  --secondary: oklch(0.26 0.03 255);
+  --secondary-foreground: oklch(0.97 0.005 240);
+  --muted: oklch(0.26 0.03 255);
+  --muted-foreground: oklch(0.7 0.02 250);
+  --accent: oklch(0.3 0.04 255);
+  --accent-foreground: oklch(0.97 0.005 240);
+  --destructive: oklch(0.65 0.22 25);
+  --destructive-foreground: oklch(0.97 0.005 240);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 12%);
+  --ring: oklch(0.65 0.18 255);
+  --highlight: oklch(0.7 0.15 245);
+  --chart-1: oklch(0.68 0.18 258);
+  --chart-2: oklch(0.78 0.1 230);
+  --chart-3: oklch(0.72 0.14 160);
+  --chart-4: oklch(0.8 0.14 65);
+  --chart-5: oklch(0.7 0.04 260);
+  --highlight-foreground: oklch(0.85 0.08 245);
+  --wa: oklch(0.68 0.14 165);
+  --wa-strong: oklch(0.8 0.12 165);
+  --wa-out: oklch(0.38 0.07 170);
+  --wa-in: oklch(0.26 0.02 240);
+  --wa-wallpaper: oklch(0.18 0.015 240);
+  --success: oklch(0.7 0.16 155);
+  --success-foreground: oklch(0.16 0.02 255);
+  --warning: oklch(0.8 0.15 70);
+  --warning-foreground: oklch(0.2 0.04 70);
+  --receipt-partial: oklch(0.78 0.16 50);
+  --receipt-pending: oklch(0.84 0.15 95);
+  --sidebar: oklch(0.19 0.05 262);
+  --sidebar-foreground: oklch(0.97 0.005 240);
+  --sidebar-primary: oklch(0.65 0.18 255);
+  --sidebar-primary-foreground: oklch(0.16 0.02 255);
+  --sidebar-accent: oklch(0.3 0.04 255);
+  --sidebar-accent-foreground: oklch(0.97 0.005 240);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.65 0.18 255);
+  --sidebar-panel: oklch(0.3 0.07 260);
+  --sidebar-panel-border: oklch(0.4 0.07 258);
+  --universe-backdrop: oklch(0.17 0.06 262);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-feature-settings: "cv11", "ss01";
+  }
+}
+
+/* Custom scrollbar for kanban board */
+@media (max-width: 767px) {
+  .cs-workspace .crm-sidebar { width: 4rem; min-width: 4rem; max-width: 4rem; }
+  body:has([aria-label="Clientes mensais"]) .crm-sidebar { width: 4rem; min-width: 4rem; max-width: 4rem; }
+  .cs-workspace > div > div:first-child { padding-right: 7.75rem; }
+}
+
+.crm-sidebar + :is(main, div) > header {
+  /* espaço para o sino (à esquerda) e a foto de perfil (canto), ambos fixos no topo */
+  padding-right: 7.75rem;
+}
+
+.kanban-scroll::-webkit-scrollbar {
+  height: 10px;
+  width: 10px;
+}
+.kanban-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.kanban-scroll::-webkit-scrollbar-thumb {
+  background: color-mix(in oklab, var(--muted-foreground) 25%, transparent);
+  border-radius: 999px;
+}
+.kanban-scroll::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in oklab, var(--muted-foreground) 45%, transparent);
+}
+
+.finance-theme > header { padding-right: 7.75rem; }
+.finance-theme [role="tabpanel"] { padding-bottom: 7rem; }
+body:has(.finance-theme) [aria-label="Abrir chat da Gravon AI"] {
+ width: 3rem;
+ height: 3rem;
+ bottom: 1rem;
+ right: 1rem;
+}
+@media print {
+ .finance-theme .finance-no-print, .finance-theme .crm-sidebar { display: none; }
+ .finance-theme main { overflow: visible; }
+}
+
+/* Gravon Universe — laboratório (gravoncompany/lead-flow-sandbox@develop, commits 6cd2b25 e f04fad5), sem alterações */
+
+/* Gravon Universe — animações da cena (desativadas com movimento reduzido) */
+@keyframes gu-drift {
+  from { transform: translate3d(0, 0, 0) scale(1.04) rotate(0deg); }
+  to { transform: translate3d(-1.6%, 1.1%, 0) scale(1.09) rotate(0.7deg); }
+}
+@keyframes gu-twinkle {
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 1; }
+}
+@keyframes gu-flow {
+  to { stroke-dashoffset: -32; }
+}
+@keyframes gu-draw {
+  from { stroke-dashoffset: 1; }
+  to { stroke-dashoffset: 0; }
+}
+@keyframes gu-pulse {
+  0% { transform: scale(0.6); opacity: 0.9; }
+  100% { transform: scale(2.6); opacity: 0; }
+}
+@keyframes gu-fade {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes gu-shimmer {
+  from { transform: translateX(-120%); }
+  to { transform: translateX(320%); }
+}
+@keyframes gu-bands {
+  from { background-position: 0 0, 0 0; }
+  to { background-position: 200% 0, 0 0; }
+}
+.gu-drift { animation: gu-drift 90s ease-in-out infinite alternate; }
+.gu-twinkle { animation: gu-twinkle 4.5s ease-in-out infinite; }
+.gu-flow { animation: gu-flow 2.4s linear infinite; }
+.gu-draw { stroke-dasharray: 1; animation: gu-draw 1.4s cubic-bezier(0.22, 0.8, 0.2, 1) both; }
+.gu-pulse { animation: gu-pulse 2.2s ease-out infinite; }
+.gu-fade { animation: gu-fade 0.5s ease-out both; }
+.gu-shimmer { animation: gu-shimmer 3.2s ease-in-out infinite; }
+.gu-bands { animation: gu-bands 60s linear infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .gu-drift, .gu-twinkle, .gu-flow, .gu-draw, .gu-pulse, .gu-fade, .gu-shimmer, .gu-bands {
+    animation: none !important;
+  }
+  .gu-draw { stroke-dasharray: none; }
+}
+
+/* Gravon Universe — celebração de conquistas (~3 s) */
+@keyframes gu-wave {
+  0% { transform: translate(-50%, -50%) scale(0.4); opacity: 0.9; }
+  100% { transform: translate(-50%, -50%) scale(3.4); opacity: 0; }
+}
+@keyframes gu-particle {
+  0% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
+  15% { opacity: 1; }
+  100% { transform: translate(calc(-50% + var(--gu-dx)), calc(-50% + var(--gu-dy))) scale(0.3); opacity: 0; }
+}
+@keyframes gu-toast {
+  0% { opacity: 0; transform: translate(-50%, -8px) scale(0.98); }
+  12%, 84% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -4px) scale(1); }
+}
+@keyframes gu-reveal {
+  0% { opacity: 0; transform: scale(0.6); }
+  40% { opacity: 1; }
+  100% { opacity: 0.55; transform: scale(1); }
+}
+.gu-wave { animation: gu-wave 1.9s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+.gu-particle { animation: gu-particle 2.6s cubic-bezier(0.2, 0.6, 0.3, 1) both; }
+.gu-toast { animation: gu-toast 3.2s ease-in-out both; }
+.gu-reveal { animation: gu-reveal 1.3s ease-out both; }
+@media (prefers-reduced-motion: reduce) {
+  .gu-wave, .gu-particle { display: none; }
+  .gu-toast { animation: none !important; transform: translate(-50%, 0); }
+  .gu-reveal { animation: none !important; opacity: 0.45; }
+}
+
+/* Pipeline: o sino fica no cabeçalho (ao lado de Atualizar); só a foto de perfil é fixa. */
+.crm-sidebar + :is(main, div) > header.pipeline-header { padding-right: 4.5rem; }

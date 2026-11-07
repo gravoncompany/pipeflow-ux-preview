@@ -1,0 +1,12 @@
+ALTER TABLE public.b2b_lookup_cache ADD COLUMN desk_query_code text, ADD COLUMN desk_pending boolean NOT NULL DEFAULT false;
+CREATE TABLE public.lead_deskdata_bindings (lead_id uuid PRIMARY KEY REFERENCES public.leads(id) ON DELETE CASCADE, cnpj text NOT NULL CHECK (cnpj ~ '^[A-Z0-9]{12}[0-9]{2}$'), identity_confirmed_at timestamptz NOT NULL DEFAULT now(), storage_authorized_at timestamptz NOT NULL DEFAULT now());
+GRANT ALL ON public.lead_deskdata_bindings TO service_role;
+REVOKE ALL ON public.lead_deskdata_bindings FROM PUBLIC, anon, authenticated;
+ALTER TABLE public.lead_deskdata_bindings ENABLE ROW LEVEL SECURITY;
+CREATE TABLE public.lead_deskdata_history (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), lead_id uuid NOT NULL REFERENCES public.leads(id) ON DELETE CASCADE, cnpj text NOT NULL, query_key text NOT NULL REFERENCES public.b2b_lookup_cache(query_key), datasets jsonb NOT NULL CHECK (jsonb_typeof(datasets) = 'array'), estimated_credits integer NOT NULL CHECK (estimated_credits >= 0), status text NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','success','empty','error','unknown')), profile jsonb, outcome_code text, created_at timestamptz NOT NULL DEFAULT now(), checked_at timestamptz NOT NULL DEFAULT now(), UNIQUE(lead_id,query_key), CHECK(profile IS NULL OR octet_length(profile::text)<=20000));
+GRANT ALL ON public.lead_deskdata_history TO service_role;
+REVOKE ALL ON public.lead_deskdata_history FROM PUBLIC, anon, authenticated;
+ALTER TABLE public.lead_deskdata_history ENABLE ROW LEVEL SECURITY;
+CREATE INDEX lead_deskdata_history_recent ON public.lead_deskdata_history(lead_id,created_at DESC);
+COMMENT ON TABLE public.lead_deskdata_bindings IS 'Explicit reviewed CNPJ association and storage authorization; full signed CRM session required, never guessed by name or overwrites confirmed lead fields.';
+COMMENT ON TABLE public.lead_deskdata_history IS 'Full CRM only sanitized enrichment history. Private provider query_code remains in cache; recovery retrieves the same operation, never resubmits a paid POST.';

@@ -1,0 +1,1056 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1792789645125,
+      "tag": "0000_migration",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1792790058054,
+      "tag": "0001_migration",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792794835364,
+      "tag": "0002_whatsapp_conversation_analysis",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1792795692525,
+      "tag": "0003_lead_utm_attribution",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1792891299349,
+      "tag": "0004_gravon_ai_whatsapp_test",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1792894615215,
+      "tag": "0005_gravon_message_sync",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1792896068438,
+      "tag": "0006_gravon_crm_read_only",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1792900530601,
+      "tag": "0007_gravon_lead_stage_actions",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1792900775733,
+      "tag": "0008_gravon_action_history_guard",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1792900810112,
+      "tag": "0009_gravon_move_revision_check",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1792901352484,
+      "tag": "0010_gravon_financial_reads",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1792902934354,
+      "tag": "0011_gravon_simple_confirmation",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1792903209034,
+      "tag": "0012_sales_pipelines",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1792904103811,
+      "tag": "0013_analysis_qualification_confirmation",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1792904593947,
+      "tag": "0014_analysis_confirmation_notes",
+      "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "7",
+      "when": 1792905208705,
+      "tag": "0015_lead_update_notifications",
+      "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1792907643373,
+      "tag": "0016_ai_knowledge",
+      "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1792908866022,
+      "tag": "0017_knowledge_conversation_learning",
+      "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1792908907870,
+      "tag": "0018_knowledge_learning_atomic_progress",
+      "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1792975050999,
+      "tag": "0019_portal_individual_admin_access",
+      "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1792975199345,
+      "tag": "0020_restrict_portal_account_grants",
+      "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1792998279156,
+      "tag": "0021_commercial_knowledge_channels",
+      "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1792998585086,
+      "tag": "0022_knowledge_append_bound",
+      "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1793034129445,
+      "tag": "0023_whatsapp_call_history",
+      "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1793034365765,
+      "tag": "0024_protect_interaction_state_updates",
+      "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1793052712939,
+      "tag": "0025_create_commercial_goals",
+      "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1793053345859,
+      "tag": "0026_zapier_inbound_events",
+      "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "7",
+      "when": 1793053804205,
+      "tag": "0027_commercial_goals_per_pipeline",
+      "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "7",
+      "when": 1793055067602,
+      "tag": "0028_traffic_investments",
+      "breakpoints": true
+    },
+    {
+      "idx": 29,
+      "version": "7",
+      "when": 1793058396420,
+      "tag": "0029_portal_agency_spend_cache",
+      "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "7",
+      "when": 1793064371181,
+      "tag": "0030_sale_classifications",
+      "breakpoints": true
+    },
+    {
+      "idx": 31,
+      "version": "7",
+      "when": 1793106825337,
+      "tag": "0031_analysis_next_message",
+      "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "7",
+      "when": 1793106994172,
+      "tag": "0032_analysis_message_private_grants",
+      "breakpoints": true
+    },
+    {
+      "idx": 33,
+      "version": "7",
+      "when": 1793107246704,
+      "tag": "0033_analysis_send_claim_guard",
+      "breakpoints": true
+    },
+    {
+      "idx": 34,
+      "version": "7",
+      "when": 1793107540837,
+      "tag": "0034_analysis_delivery_receipts",
+      "breakpoints": true
+    },
+    {
+      "idx": 35,
+      "version": "7",
+      "when": 1793107595087,
+      "tag": "0035_analysis_snapshot_bounded",
+      "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1793157482861,
+      "tag": "0036_instagram_directs_private",
+      "breakpoints": true
+    },
+    {
+      "idx": 37,
+      "version": "7",
+      "when": 1793157786621,
+      "tag": "0037_instagram_immutable_company_binding",
+      "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "7",
+      "when": 1793210964775,
+      "tag": "0038_first_contact_private_queue",
+      "breakpoints": true
+    },
+    {
+      "idx": 39,
+      "version": "7",
+      "when": 1793211055182,
+      "tag": "0039_first_contact_atomic_send",
+      "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "7",
+      "when": 1793211239872,
+      "tag": "0040_first_contact_transactional_enrollment",
+      "breakpoints": true
+    },
+    {
+      "idx": 41,
+      "version": "7",
+      "when": 1793211386860,
+      "tag": "0041_first_contact_recovery_and_audit",
+      "breakpoints": true
+    },
+    {
+      "idx": 42,
+      "version": "7",
+      "when": 1793211477223,
+      "tag": "0042_first_contact_paused_recovery",
+      "breakpoints": true
+    },
+    {
+      "idx": 43,
+      "version": "7",
+      "when": 1793211954210,
+      "tag": "0043_first_contact_echo_window",
+      "breakpoints": true
+    },
+    {
+      "idx": 44,
+      "version": "7",
+      "when": 1793213103140,
+      "tag": "0044_first_contact_final_safety",
+      "breakpoints": true
+    },
+    {
+      "idx": 45,
+      "version": "7",
+      "when": 1793213285609,
+      "tag": "0045_first_contact_supported_timer",
+      "breakpoints": true
+    },
+    {
+      "idx": 46,
+      "version": "7",
+      "when": 1793240418333,
+      "tag": "0046_first_contact_controlled_test",
+      "breakpoints": true
+    },
+    {
+      "idx": 47,
+      "version": "7",
+      "when": 1793240505161,
+      "tag": "0047_first_contact_test_company_default",
+      "breakpoints": true
+    },
+    {
+      "idx": 48,
+      "version": "7",
+      "when": 1793241530892,
+      "tag": "0048_first_contact_reply_policy_and_immediate_enqueue",
+      "breakpoints": true
+    },
+    {
+      "idx": 49,
+      "version": "7",
+      "when": 1793242259602,
+      "tag": "0049_first_contact_full_controlled_test",
+      "breakpoints": true
+    },
+    {
+      "idx": 50,
+      "version": "7",
+      "when": 1793242365648,
+      "tag": "0050_first_contact_full_test_reply_cancel",
+      "breakpoints": true
+    },
+    {
+      "idx": 51,
+      "version": "7",
+      "when": 1793242999187,
+      "tag": "0051_first_contact_future_only_production_callback",
+      "breakpoints": true
+    },
+    {
+      "idx": 52,
+      "version": "7",
+      "when": 1793244010357,
+      "tag": "0052_secure_crm_leads_and_settings_boundary",
+      "breakpoints": true
+    },
+    {
+      "idx": 53,
+      "version": "7",
+      "when": 1793376898567,
+      "tag": "0053_portal_art_whatsapp_notifications",
+      "breakpoints": true
+    },
+    {
+      "idx": 54,
+      "version": "7",
+      "when": 1793398396086,
+      "tag": "0054_instagram_business_oauth_private",
+      "breakpoints": true
+    },
+    {
+      "idx": 55,
+      "version": "7",
+      "when": 1793398442623,
+      "tag": "0055_instagram_oauth_app_binding",
+      "breakpoints": true
+    },
+    {
+      "idx": 56,
+      "version": "7",
+      "when": 1793399321275,
+      "tag": "0056_instagram_oauth_safe_diagnostics",
+      "breakpoints": true
+    },
+    {
+      "idx": 57,
+      "version": "7",
+      "when": 1793402579598,
+      "tag": "0057_instagram_oauth_preserved_candidates",
+      "breakpoints": true
+    },
+    {
+      "idx": 58,
+      "version": "7",
+      "when": 1793500800000,
+      "tag": "0058_b2b_prospecting",
+      "breakpoints": true
+    },
+    {
+      "idx": 59,
+      "version": "7",
+      "when": 1793562239210,
+      "tag": "0059_b2b_hybrid_private_cache",
+      "breakpoints": true
+    },
+    {
+      "idx": 60,
+      "version": "7",
+      "when": 1793606000000,
+      "tag": "0060_b2b_pending_cnpj",
+      "breakpoints": true
+    },
+    {
+      "idx": 61,
+      "version": "7",
+      "when": 1793606000001,
+      "tag": "0061_b2b_pending_legal_name",
+      "breakpoints": true
+    },
+    {
+      "idx": 62,
+      "version": "7",
+      "when": 1793606000002,
+      "tag": "0062_lead_deskdata_enrichment",
+      "breakpoints": true
+    },
+    {
+      "idx": 63,
+      "version": "7",
+      "when": 1793606000003,
+      "tag": "0063_b2b_instagram_import",
+      "breakpoints": true
+    },
+    {
+      "idx": 64,
+      "version": "7",
+      "when": 1793606000004,
+      "tag": "0064_campaigns_private_drafts",
+      "breakpoints": true
+    },
+    {
+      "idx": 65,
+      "version": "7",
+      "when": 1793606000005,
+      "tag": "0065_campaign_consent_audit",
+      "breakpoints": true
+    },
+    {
+      "idx": 66,
+      "version": "7",
+      "when": 1793606000006,
+      "tag": "0066_crm_calendar_module",
+      "breakpoints": true
+    },
+    {
+      "idx": 67,
+      "version": "7",
+      "when": 1793606000007,
+      "tag": "0067_crm_clients_module",
+      "breakpoints": true
+    },
+    {
+      "idx": 68,
+      "version": "7",
+      "when": 1793606000008,
+      "tag": "0068_finance_management",
+      "breakpoints": true
+    },
+    {
+      "idx": 69,
+      "version": "7",
+      "when": 1793606000009,
+      "tag": "0069_finance_recurrences_client_settlements",
+      "breakpoints": true
+    },
+    {
+      "idx": 70,
+      "version": "7",
+      "when": 1793606000010,
+      "tag": "0070_finance_integrity_guards",
+      "breakpoints": true
+    },
+    {
+      "idx": 71,
+      "version": "7",
+      "when": 1793606000011,
+      "tag": "0071_finance_reserved_available_balance",
+      "breakpoints": true
+    },
+    {
+      "idx": 72,
+      "version": "7",
+      "when": 1793606000012,
+      "tag": "0072_crm_projects",
+      "breakpoints": true
+    },
+    {
+      "idx": 73,
+      "version": "7",
+      "when": 1793606000013,
+      "tag": "0073_gravon_universe",
+      "breakpoints": true
+    },
+    {
+      "idx": 74,
+      "version": "7",
+      "when": 1793606000014,
+      "tag": "0074_universe_private_grants",
+      "breakpoints": true
+    },
+    {
+      "idx": 75,
+      "version": "7",
+      "when": 1793606000015,
+      "tag": "0075_b2b_ai_email_drafts",
+      "breakpoints": true
+    },
+    {
+      "idx": 76,
+      "version": "7",
+      "when": 1793606000016,
+      "tag": "0076_b2b_prospect_campaign_configuration",
+      "breakpoints": true
+    },
+    {
+      "idx": 77,
+      "version": "7",
+      "when": 1793606000017,
+      "tag": "0077_polp_consent_renewal_lease",
+      "breakpoints": true
+    },
+    {
+      "idx": 78,
+      "version": "7",
+      "when": 1793606000018,
+      "tag": "0078_polp_bank_ledger",
+      "breakpoints": true
+    },
+    {
+      "idx": 79,
+      "version": "7",
+      "when": 1793606000019,
+      "tag": "0079_polp_bank_classification",
+      "breakpoints": true
+    },
+    {
+      "idx": 80,
+      "version": "7",
+      "when": 1793606000020,
+      "tag": "0080_polp_bank_reconciliation",
+      "breakpoints": true
+    },
+    {
+      "idx": 81,
+      "version": "7",
+      "when": 1793606000021,
+      "tag": "0081_polp_bank_review",
+      "breakpoints": true
+    },
+    {
+      "idx": 82,
+      "version": "7",
+      "when": 1793606000022,
+      "tag": "0082_crm_profile",
+      "breakpoints": true
+    },
+    {
+      "idx": 83,
+      "version": "7",
+      "when": 1793606000023,
+      "tag": "0083_crm_reference_messages",
+      "breakpoints": true
+    },
+    {
+      "idx": 84,
+      "version": "7",
+      "when": 1793606000024,
+      "tag": "0084_crm_commercial_agent",
+      "breakpoints": true
+    },
+    {
+      "idx": 85,
+      "version": "7",
+      "when": 1793724891740,
+      "tag": "0085_crm_reference_messages",
+      "breakpoints": true
+    },
+    {
+      "idx": 86,
+      "version": "7",
+      "when": 1793724891741,
+      "tag": "0086_campaign_email_delivery",
+      "breakpoints": true
+    },
+    {
+      "idx": 87,
+      "version": "7",
+      "when": 1793730076082,
+      "tag": "0087_confirm_campaign_email_delivery",
+      "breakpoints": true
+    },
+    {
+      "idx": 88,
+      "version": "7",
+      "when": 1793742702947,
+      "tag": "0088_crm_agent_contact_controls",
+      "breakpoints": true
+    },
+    {
+      "idx": 89,
+      "version": "7",
+      "when": 1793744713152,
+      "tag": "0089_meta_capi_settings",
+      "breakpoints": true
+    },
+    {
+      "idx": 90,
+      "version": "7",
+      "when": 1793746796539,
+      "tag": "0090_bank_ai_suggestions",
+      "breakpoints": true
+    },
+    {
+      "idx": 91,
+      "version": "7",
+      "when": 1793751316317,
+      "tag": "0091_b2b_public_enrichment",
+      "breakpoints": true
+    },
+    {
+      "idx": 92,
+      "version": "7",
+      "when": 1793751642293,
+      "tag": "0092_b2b_public_enrichment_apply_v2",
+      "breakpoints": true
+    },
+    {
+      "idx": 93,
+      "version": "7",
+      "when": 1793752017534,
+      "tag": "0093_b2b_public_enrichment_apply_fix",
+      "breakpoints": true
+    },
+    {
+      "idx": 94,
+      "version": "7",
+      "when": 1793754523613,
+      "tag": "0094_campaign_email_without_consent_requirement",
+      "breakpoints": true
+    },
+    {
+      "idx": 95,
+      "version": "7",
+      "when": 1793759438295,
+      "tag": "0095_email_flows",
+      "breakpoints": true
+    },
+    {
+      "idx": 96,
+      "version": "7",
+      "when": 1793763350137,
+      "tag": "0096_email_agent_inbox",
+      "breakpoints": true
+    },
+    {
+      "idx": 97,
+      "version": "7",
+      "when": 1793765330560,
+      "tag": "0097_company_insights",
+      "breakpoints": true
+    },
+    {
+      "idx": 98,
+      "version": "7",
+      "when": 1793766351468,
+      "tag": "0098_meta_capi_limited_check",
+      "breakpoints": true
+    },
+    {
+      "idx": 99,
+      "version": "7",
+      "when": 1793767713219,
+      "tag": "0099_lead_ai_qualification",
+      "breakpoints": true
+    },
+    {
+      "idx": 100,
+      "version": "7",
+      "when": 1793768035839,
+      "tag": "0100_lead_ai_qualification_wake",
+      "breakpoints": true
+    },
+    {
+      "idx": 101,
+      "version": "7",
+      "when": 1793768808297,
+      "tag": "0101_meta_capi_event_monitoring",
+      "breakpoints": true
+    },
+    {
+      "idx": 102,
+      "version": "7",
+      "when": 1793769673657,
+      "tag": "0102_meta_ads_spend",
+      "breakpoints": true
+    },
+    {
+      "idx": 103,
+      "version": "7",
+      "when": 1793804053480,
+      "tag": "0103_crm_agent_move_stages",
+      "breakpoints": true
+    },
+    {
+      "idx": 104,
+      "version": "7",
+      "when": 1793810014663,
+      "tag": "0104_lead_closed_value",
+      "breakpoints": true
+    },
+    {
+      "idx": 105,
+      "version": "7",
+      "when": 1793824072508,
+      "tag": "0105_b2b_email_dispatch",
+      "breakpoints": true
+    },
+    {
+      "idx": 106,
+      "version": "7",
+      "when": 1793825723049,
+      "tag": "0106_b2b_outreach_automation",
+      "breakpoints": true
+    },
+    {
+      "idx": 107,
+      "version": "7",
+      "when": 1793827048886,
+      "tag": "0107_crm_client_projects_portal",
+      "breakpoints": true
+    },
+    {
+      "idx": 108,
+      "version": "7",
+      "when": 1793827087511,
+      "tag": "0108_crm_client_convert_cnpj_fix",
+      "breakpoints": true
+    },
+    {
+      "idx": 109,
+      "version": "7",
+      "when": 1793830248024,
+      "tag": "0109_crm_automations",
+      "breakpoints": true
+    },
+    {
+      "idx": 110,
+      "version": "7",
+      "when": 1793830545407,
+      "tag": "0110_crm_automations_save_fix",
+      "breakpoints": true
+    },
+    {
+      "idx": 111,
+      "version": "7",
+      "when": 1793830579462,
+      "tag": "0111_crm_automations_entries_fix",
+      "breakpoints": true
+    },
+    {
+      "idx": 112,
+      "version": "7",
+      "when": 1793836087636,
+      "tag": "0112_crm_api_keys_diagnosis_intake",
+      "breakpoints": true
+    },
+    {
+      "idx": 113,
+      "version": "7",
+      "when": 1793840651888,
+      "tag": "0113_crm_automations_step_actions_history",
+      "breakpoints": true
+    },
+    {
+      "idx": 114,
+      "version": "7",
+      "when": 1793840823149,
+      "tag": "0114_crm_automations_manual_trigger",
+      "breakpoints": true
+    },
+    {
+      "idx": 115,
+      "version": "7",
+      "when": 1793847350556,
+      "tag": "0115_crm_notifications",
+      "breakpoints": true
+    },
+    {
+      "idx": 116,
+      "version": "7",
+      "when": 1793851162965,
+      "tag": "0116_diagnosis_whatsapp_automation",
+      "breakpoints": true
+    },
+    {
+      "idx": 117,
+      "version": "7",
+      "when": 1793856585272,
+      "tag": "0117_external_integrations_hypercash",
+      "breakpoints": true
+    },
+    {
+      "idx": 118,
+      "version": "7",
+      "when": 1793858199519,
+      "tag": "0118_customer_success",
+      "breakpoints": true
+    },
+    {
+      "idx": 119,
+      "version": "7",
+      "when": 1793881679479,
+      "tag": "0119_bank_batch_review",
+      "breakpoints": true
+    },
+    {
+      "idx": 120,
+      "version": "7",
+      "when": 1793883965636,
+      "tag": "0120_hypercash_integrity",
+      "breakpoints": true
+    },
+    {
+      "idx": 121,
+      "version": "7",
+      "when": 1793883994832,
+      "tag": "0121_hypercash_sync_snapshot",
+      "breakpoints": true
+    },
+    {
+      "idx": 122,
+      "version": "7",
+      "when": 1793884295673,
+      "tag": "0122_hypercash_link_guards",
+      "breakpoints": true
+    },
+    {
+      "idx": 123,
+      "version": "7",
+      "when": 1793884433901,
+      "tag": "0123_hypercash_revenue_status",
+      "breakpoints": true
+    },
+    {
+      "idx": 124,
+      "version": "7",
+      "when": 1793885088295,
+      "tag": "0124_customer_success_management",
+      "breakpoints": true
+    },
+    {
+      "idx": 125,
+      "version": "7",
+      "when": 1793888155266,
+      "tag": "0125_client_crm_cards",
+      "breakpoints": true
+    },
+    {
+      "idx": 126,
+      "version": "7",
+      "when": 1793888537643,
+      "tag": "0126_cs_recurring_agreements",
+      "breakpoints": true
+    },
+    {
+      "idx": 127,
+      "version": "7",
+      "when": 1793890284157,
+      "tag": "0127_cs_strategic_assessment",
+      "breakpoints": true
+    },
+    {
+      "idx": 128,
+      "version": "7",
+      "when": 1793890750320,
+      "tag": "0128_whatsapp_campaign_dispatch",
+      "breakpoints": true
+    },
+    {
+      "idx": 129,
+      "version": "7",
+      "when": 1793892059761,
+      "tag": "0129_client_tasks_ai_central",
+      "breakpoints": true
+    },
+    {
+      "idx": 130,
+      "version": "7",
+      "when": 1793892701197,
+      "tag": "0130_whatsapp_campaign_pacing",
+      "breakpoints": true
+    },
+    {
+      "idx": 131,
+      "version": "7",
+      "when": 1793892850863,
+      "tag": "0131_settle_campaigns_email_only",
+      "breakpoints": true
+    },
+    {
+      "idx": 132,
+      "version": "7",
+      "when": 1793893131861,
+      "tag": "0132_client_task_from_message",
+      "breakpoints": true
+    },
+    {
+      "idx": 133,
+      "version": "7",
+      "when": 1793893487993,
+      "tag": "0133_external_integrations_custom",
+      "breakpoints": true
+    },
+    {
+      "idx": 134,
+      "version": "7",
+      "when": 1793894622617,
+      "tag": "0134_meta_ad_account_registry",
+      "breakpoints": true
+    },
+    {
+      "idx": 135,
+      "version": "7",
+      "when": 1793897001286,
+      "tag": "0135_whatsapp_campaign_groups",
+      "breakpoints": true
+    },
+    {
+      "idx": 136,
+      "version": "7",
+      "when": 1793897563735,
+      "tag": "0136_client_meta_metric_prefs",
+      "breakpoints": true
+    },
+    {
+      "idx": 137,
+      "version": "7",
+      "when": 1793899038522,
+      "tag": "0137_client_tasks_management",
+      "breakpoints": true
+    },
+    {
+      "idx": 138,
+      "version": "7",
+      "when": 1793899448502,
+      "tag": "0138_whatsapp_group_tags",
+      "breakpoints": true
+    },
+    {
+      "idx": 139,
+      "version": "7",
+      "when": 1793899978306,
+      "tag": "0139_b2b_email_list_import",
+      "breakpoints": true
+    },
+    {
+      "idx": 140,
+      "version": "7",
+      "when": 1793988589135,
+      "tag": "0140_whatsapp_group_snapshot",
+      "breakpoints": true
+    },
+    {
+      "idx": 141,
+      "version": "7",
+      "when": 1793989321391,
+      "tag": "0141_client_receipt_control",
+      "breakpoints": true
+    },
+    {
+      "idx": 142,
+      "version": "7",
+      "when": 1793989552613,
+      "tag": "0142_receipt_correction_guard",
+      "breakpoints": true
+    },
+    {
+      "idx": 143,
+      "version": "7",
+      "when": 1794005550047,
+      "tag": "0143_b2b_instagram_prospecting",
+      "breakpoints": true
+    },
+    {
+      "idx": 144,
+      "version": "7",
+      "when": 1794005820038,
+      "tag": "0144_b2b_instagram_force_rls",
+      "breakpoints": true
+    },
+    {
+      "idx": 145,
+      "version": "7",
+      "when": 1794016548004,
+      "tag": "0145_outbound_email_click_tracking",
+      "breakpoints": true
+    },
+    {
+      "idx": 146,
+      "version": "7",
+      "when": 1794016930908,
+      "tag": "0146_preserve_outbound_click_audit",
+      "breakpoints": true
+    },
+    {
+      "idx": 147,
+      "version": "7",
+      "when": 1794018119038,
+      "tag": "0147_b2b_instagram_enrichment",
+      "breakpoints": true
+    },
+    {
+      "idx": 148,
+      "version": "7",
+      "when": 1794019258827,
+      "tag": "0148_instagram_public_contact_evidence",
+      "breakpoints": true
+    },
+    {
+      "idx": 149,
+      "version": "7",
+      "when": 1794025181396,
+      "tag": "0149_marketing_module",
+      "breakpoints": true
+    }
+  ]
+}

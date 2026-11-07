@@ -1,0 +1,1 @@
+ALTER TABLE public.first_contact_tests ALTER COLUMN company_key SET DEFAULT 'crm:1';

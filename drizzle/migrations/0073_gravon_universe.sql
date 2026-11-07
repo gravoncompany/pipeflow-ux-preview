@@ -1,0 +1,59 @@
+CREATE TABLE public.universe_receipts(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),company_key text NOT NULL DEFAULT 'crm:1' CHECK(company_key='crm:1'),amount bigint NOT NULL CHECK(amount>0 AND amount<=100000000000),received_on date NOT NULL,description text NOT NULL CHECK(length(btrim(description)) BETWEEN 2 AND 300),origin text NOT NULL CHECK(length(btrim(origin)) BETWEEN 2 AND 160),reference text NOT NULL CHECK(length(btrim(reference)) BETWEEN 2 AND 160),status text NOT NULL CHECK(status IN ('pendente','confirmada','cancelada')),revision integer NOT NULL DEFAULT 0,created_at timestamptz NOT NULL DEFAULT now(),UNIQUE(company_key,origin,reference));
+GRANT SELECT,INSERT,UPDATE ON public.universe_receipts TO service_role;
+ALTER TABLE public.universe_receipts ENABLE ROW LEVEL SECURITY;
+CREATE UNIQUE INDEX universe_receipt_identity ON public.universe_receipts(company_key,lower(btrim(origin)),lower(btrim(reference)));
+CREATE TABLE public.universe_settings(company_key text PRIMARY KEY CHECK(company_key='crm:1'),monthly bigint[] NOT NULL,lifetime bigint[] NOT NULL,revision integer NOT NULL DEFAULT 0);
+GRANT SELECT,INSERT,UPDATE ON public.universe_settings TO service_role;
+ALTER TABLE public.universe_settings ENABLE ROW LEVEL SECURITY;
+CREATE TABLE public.universe_audit(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),company_key text NOT NULL DEFAULT 'crm:1' CHECK(company_key='crm:1'),event uuid NOT NULL UNIQUE,actor uuid NOT NULL,record_id uuid,reason text NOT NULL,before_data jsonb,after_data jsonb NOT NULL,created_at timestamptz NOT NULL DEFAULT now());
+GRANT SELECT,INSERT ON public.universe_audit TO service_role;
+ALTER TABLE public.universe_audit ENABLE ROW LEVEL SECURITY;
+CREATE TABLE public.universe_awards(company_key text NOT NULL DEFAULT 'crm:1' CHECK(company_key='crm:1'),journey text NOT NULL CHECK(journey IN ('monthly','lifetime')),amount bigint NOT NULL CHECK(amount>0),period text NOT NULL,evidence_total bigint NOT NULL,awarded_at timestamptz NOT NULL DEFAULT now(),PRIMARY KEY(company_key,journey,amount));
+GRANT SELECT,INSERT ON public.universe_awards TO service_role;
+ALTER TABLE public.universe_awards ENABLE ROW LEVEL SECURITY;
+CREATE VIEW public.universe_confirmed_sources AS
+SELECT 'universe:'||r.id::text AS id,r.amount,r.received_on AS date,r.description,r.origin,r.reference,r.status,r.revision,true AS editable FROM public.universe_receipts r WHERE r.company_key='crm:1'
+UNION ALL
+SELECT 'finance:'||s.id::text,(s.data->>'amount')::bigint,(s.data->>'date')::date,coalesce(e.data->>'name','Recebimento financeiro'),'Financeiro',s.id::text,'confirmada',s.revision,false FROM public.finance_records s JOIN public.finance_records e ON e.id::text=s.data->>'targetId' AND e.scope='crm:1' AND e.kind='entry' JOIN public.finance_records a ON a.id::text=s.data->>'accountId' AND a.kind='account' AND a.scope='crm:1' WHERE s.scope='crm:1' AND s.kind='settlement' AND s.data->'confirmed'='true'::jsonb AND e.data->>'direction'='in' AND e.data->>'category'='receita' AND e.data->>'status'<>'cancelado' AND nullif(e.data->>'clientId','') IS NULL AND (s.data->>'amount')::bigint>0 AND (s.data->>'date')::date<=(now() AT TIME ZONE 'America/Sao_Paulo')::date
+UNION ALL
+SELECT 'client:'||p.id::text,round(p.amount*100)::bigint,p.paid_at,c.description,'Clientes',p.id::text,'confirmada',0,false FROM public.crm_client_payments p JOIN public.crm_client_charges c ON c.id=p.charge_id JOIN public.finance_records a ON a.id=p.finance_account_id AND a.kind='account' AND a.scope='crm:1' WHERE p.finance_operation IS NOT NULL AND p.confirmed_by<>'' AND c.status<>'cancelado' AND p.amount>0 AND p.paid_at<=(now() AT TIME ZONE 'America/Sao_Paulo')::date;
+REVOKE ALL ON public.universe_confirmed_sources FROM PUBLIC,anon,authenticated;
+GRANT SELECT ON public.universe_confirmed_sources TO service_role;
+CREATE FUNCTION public.universe_assert(p_actor uuid) RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$ BEGIN IF auth.role() IS DISTINCT FROM 'service_role' OR NOT public.commercial_knowledge_access(p_actor,'crm:1') THEN RAISE EXCEPTION 'universe_forbidden' USING ERRCODE='42501'; END IF; END $$;
+REVOKE ALL ON FUNCTION public.universe_assert(uuid) FROM PUBLIC,anon,authenticated; GRANT EXECUTE ON FUNCTION public.universe_assert(uuid) TO service_role;
+CREATE FUNCTION public.universe_refresh_awards() RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$ DECLARE m bigint[];l bigint[]; BEGIN
+ PERFORM pg_advisory_xact_lock(hashtextextended('universe:crm:1',0));
+ SELECT monthly,lifetime INTO m,l FROM public.universe_settings WHERE company_key='crm:1';
+ m:=coalesce(m,ARRAY[1000000,2000000,3000000,4000000,5000000,7500000,10000000,15000000,25000000,50000000,100000000]::bigint[]);l:=coalesce(l,ARRAY[10000000,25000000,50000000,100000000,200000000,500000000,1000000000]::bigint[]);
+ WITH monthly AS (SELECT to_char(date,'YYYY-MM') period,sum(amount)::bigint total FROM public.universe_confirmed_sources WHERE status='confirmada' AND date<=(now() AT TIME ZONE 'America/Sao_Paulo')::date GROUP BY 1), running AS (SELECT period,total,sum(total) OVER(ORDER BY period)::bigint accumulated FROM monthly), candidates AS (SELECT 'monthly'::text journey,t amount,min(r.period) period FROM running r CROSS JOIN unnest(m) t WHERE r.total>=t GROUP BY t UNION ALL SELECT 'lifetime',t,min(r.period) FROM running r CROSS JOIN unnest(l) t WHERE r.accumulated>=t GROUP BY t)
+ INSERT INTO public.universe_awards(journey,amount,period,evidence_total) SELECT c.journey,c.amount,c.period,CASE WHEN c.journey='monthly' THEN r.total ELSE r.accumulated END FROM candidates c JOIN running r ON r.period=c.period ON CONFLICT DO NOTHING;
+ END $$;
+REVOKE ALL ON FUNCTION public.universe_refresh_awards() FROM PUBLIC,anon,authenticated;GRANT EXECUTE ON FUNCTION public.universe_refresh_awards() TO service_role;
+CREATE FUNCTION public.universe_receipt_guard() RETURNS trigger LANGUAGE plpgsql SET search_path=public AS $$ BEGIN IF NEW.status='confirmada' AND NEW.received_on>(now() AT TIME ZONE 'America/Sao_Paulo')::date THEN RAISE EXCEPTION 'universe_future'; END IF;RETURN NEW;END $$;
+CREATE TRIGGER universe_receipt_guard BEFORE INSERT OR UPDATE ON public.universe_receipts FOR EACH ROW EXECUTE FUNCTION public.universe_receipt_guard();
+CREATE FUNCTION public.universe_source_changed() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$ BEGIN PERFORM public.universe_refresh_awards();RETURN NULL;END $$;
+CREATE TRIGGER universe_receipt_awards AFTER INSERT OR UPDATE ON public.universe_receipts FOR EACH STATEMENT EXECUTE FUNCTION public.universe_source_changed();
+CREATE TRIGGER universe_finance_awards AFTER INSERT OR UPDATE ON public.finance_records FOR EACH STATEMENT EXECUTE FUNCTION public.universe_source_changed();
+CREATE TRIGGER universe_client_awards AFTER INSERT ON public.crm_client_payments FOR EACH STATEMENT EXECUTE FUNCTION public.universe_source_changed();
+CREATE FUNCTION public.save_universe_receipt(p_actor uuid,p_event uuid,p_id uuid,p_revision integer,p_reason text,p_data jsonb) RETURNS jsonb LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$ DECLARE v public.universe_receipts; old jsonb;e public.universe_audit; BEGIN
+ PERFORM public.universe_assert(p_actor);PERFORM pg_advisory_xact_lock(hashtextextended('universe:crm:1',0));
+ SELECT * INTO e FROM public.universe_audit WHERE event=p_event;
+ IF FOUND THEN IF e.actor<>p_actor OR e.after_data IS DISTINCT FROM p_data OR e.reason<>p_reason OR (p_id IS NOT NULL AND e.record_id<>p_id) THEN RAISE EXCEPTION 'universe_event_conflict';END IF;RETURN jsonb_build_object('id',e.record_id,'replayed',true);END IF;
+ IF length(btrim(p_reason)) NOT BETWEEN 3 AND 1000 OR jsonb_typeof(p_data)<>'object' OR p_data->>'origin' IN ('Financeiro','Clientes') THEN RAISE EXCEPTION 'universe_invalid';END IF;
+ IF p_id IS NOT NULL THEN SELECT * INTO v FROM public.universe_receipts WHERE id=p_id FOR UPDATE;IF NOT FOUND OR v.revision<>p_revision THEN RAISE EXCEPTION 'universe_changed';END IF;old:=to_jsonb(v);END IF;
+ IF EXISTS(SELECT 1 FROM public.universe_confirmed_sources WHERE amount=(p_data->>'amount')::bigint AND date=(p_data->>'date')::date AND status<>'cancelada' AND id IS DISTINCT FROM 'universe:'||p_id::text) THEN RAISE EXCEPTION 'universe_possible_duplicate';END IF;
+ IF p_id IS NULL THEN INSERT INTO public.universe_receipts(amount,received_on,description,origin,reference,status) VALUES((p_data->>'amount')::bigint,(p_data->>'date')::date,p_data->>'description',p_data->>'origin',p_data->>'reference',p_data->>'status') RETURNING * INTO v;
+ ELSE UPDATE public.universe_receipts SET amount=(p_data->>'amount')::bigint,received_on=(p_data->>'date')::date,description=p_data->>'description',origin=p_data->>'origin',reference=p_data->>'reference',status=p_data->>'status',revision=revision+1 WHERE id=p_id RETURNING * INTO v;END IF;
+ INSERT INTO public.universe_audit(event,actor,record_id,reason,before_data,after_data) VALUES(p_event,p_actor,v.id,p_reason,old,p_data);RETURN jsonb_build_object('id',v.id,'replayed',false);END $$;
+REVOKE ALL ON FUNCTION public.save_universe_receipt(uuid,uuid,uuid,integer,text,jsonb) FROM PUBLIC,anon,authenticated;GRANT EXECUTE ON FUNCTION public.save_universe_receipt(uuid,uuid,uuid,integer,text,jsonb) TO service_role;
+CREATE FUNCTION public.save_universe_targets(p_actor uuid,p_event uuid,p_revision integer,p_reason text,p_monthly bigint[],p_lifetime bigint[]) RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$ DECLARE v public.universe_settings;d jsonb;e public.universe_audit;a bigint[];BEGIN
+ PERFORM public.universe_assert(p_actor);PERFORM pg_advisory_xact_lock(hashtextextended('universe:crm:1',0));d:=jsonb_build_object('monthly',p_monthly,'lifetime',p_lifetime);
+ SELECT * INTO e FROM public.universe_audit WHERE event=p_event;IF FOUND THEN IF e.actor<>p_actor OR e.after_data IS DISTINCT FROM d OR e.reason<>p_reason THEN RAISE EXCEPTION 'universe_event_conflict';END IF;RETURN;END IF;
+ IF length(btrim(p_reason)) NOT BETWEEN 3 AND 1000 THEN RAISE EXCEPTION 'universe_invalid';END IF;
+ FOREACH a SLICE 1 IN ARRAY ARRAY[p_monthly] LOOP IF cardinality(a) NOT BETWEEN 1 AND 20 OR EXISTS(SELECT 1 FROM unnest(a) WITH ORDINALITY x(t,i) WHERE t IS NULL OR t<=0 OR t>100000000000 OR (i>1 AND t<=a[i-1])) THEN RAISE EXCEPTION 'universe_invalid_targets';END IF;END LOOP;
+ a:=p_lifetime;IF cardinality(a) NOT BETWEEN 1 AND 20 OR EXISTS(SELECT 1 FROM unnest(a) WITH ORDINALITY x(t,i) WHERE t IS NULL OR t<=0 OR t>100000000000 OR (i>1 AND t<=a[i-1])) THEN RAISE EXCEPTION 'universe_invalid_targets';END IF;
+ SELECT * INTO v FROM public.universe_settings WHERE company_key='crm:1' FOR UPDATE;IF coalesce(v.revision,0)<>p_revision THEN RAISE EXCEPTION 'universe_changed';END IF;
+ INSERT INTO public.universe_settings(company_key,monthly,lifetime,revision) VALUES('crm:1',p_monthly,p_lifetime,1) ON CONFLICT(company_key) DO UPDATE SET monthly=excluded.monthly,lifetime=excluded.lifetime,revision=universe_settings.revision+1;
+ INSERT INTO public.universe_audit(event,actor,reason,before_data,after_data) VALUES(p_event,p_actor,p_reason,to_jsonb(v),d);PERFORM public.universe_refresh_awards();END $$;
+REVOKE ALL ON FUNCTION public.save_universe_targets(uuid,uuid,integer,text,bigint[],bigint[]) FROM PUBLIC,anon,authenticated;GRANT EXECUTE ON FUNCTION public.save_universe_targets(uuid,uuid,integer,text,bigint[],bigint[]) TO service_role;
+COMMENT ON VIEW public.universe_confirmed_sources IS 'Agency receipts only. Excludes client-linked manual settlements to prevent dual counting with reconciled client payments; Sheets/Portal forecasts are not summed. Monetary amounts are integer cents.';

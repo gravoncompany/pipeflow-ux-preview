@@ -1,0 +1,12 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {learnedBankSuggestion,reviewPage,selectedReviewRows,type ApprovedExample,type ReviewIdentity} from './bank-review';
+const row:ReviewIdentity={transactionId:'new',accountId:'bank1',payerHmac:'document-hmac',counterparty:'Clínica',description:'Pix recebido mensal',direction:'CREDITO',amountCents:150000,transactionAt:'2026-11-05T12:00:00Z'};
+const example:ApprovedExample={...row,transactionId:'old1',transactionAt:'2026-09-05T12:00:00Z',kind:'receita_operacional',category:null,vendor:null,clientId:'client1'};
+test('R$1500 recorrentes: identidade + conta + datas distintas sugerem cliente com alta confiança',()=>{const s=learnedBankSuggestion(row,[example,{...example,transactionId:'old2',transactionAt:'2026-10-05T12:00:00Z'}]);assert.equal(s?.kind,'receita_operacional');assert.equal(s?.clientId,'client1');assert.equal(s?.confidence,'alta');});
+test('valor igual sozinho não identifica cliente',()=>assert.equal(learnedBankSuggestion({...row,payerHmac:'other',counterparty:'Outro'},[example]),null));
+test('conta diferente não reutiliza identidade',()=>assert.equal(learnedBankSuggestion({...row,accountId:'other'},[example]),null));
+test('uma confirmação mantém confiança média e não confirma',()=>{assert.equal(learnedBankSuggestion(row,[example])?.confidence,'media');});
+test('correções divergentes deixam a sugestão manual',()=>assert.equal(learnedBankSuggestion(row,[example,{...example,transactionId:'old2',kind:'transferencia_interna'}]),null));
+test('nome e descrição sem documento nunca geram alta confiança',()=>{const s=learnedBankSuggestion({...row,payerHmac:null},[{...example,payerHmac:null},{...example,payerHmac:null,transactionId:'old2',transactionAt:'2026-10-05T12:00:00Z'}]);assert.equal(s?.confidence,'media');});
+test('seleção entre páginas respeita somente linhas filtradas',()=>{const rows=Array.from({length:90},(_,i)=>({id:String(i)}));const selected=new Set(rows.map(r=>r.id));assert.equal(reviewPage(rows,1).length,40);assert.equal(selectedReviewRows(rows.filter(r=>Number(r.id)%2===0),selected).length,45);assert.equal(selectedReviewRows(rows,new Set(['missing'])).length,0);});

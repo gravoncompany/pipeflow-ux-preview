@@ -1,0 +1,2 @@
+REVOKE ALL ON public.analysis_message_drafts FROM anon, authenticated;
+COMMENT ON TABLE public.analysis_message_drafts IS 'Service-only reviewed send records; no anonymous/authenticated grants or policies. Access requires full signed CRM cookie and verified account, company and exact channel.';

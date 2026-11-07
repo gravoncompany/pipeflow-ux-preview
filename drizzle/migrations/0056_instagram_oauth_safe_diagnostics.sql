@@ -1,0 +1,2 @@
+ALTER TABLE public.instagram_oauth_flows ADD COLUMN diagnostic_stage text, ADD COLUMN diagnostic_code text, ADD COLUMN diagnostic_http_status integer, ADD COLUMN callback_received_at timestamptz;
+COMMENT ON COLUMN public.instagram_oauth_flows.diagnostic_code IS 'Bounded server-owned diagnostic enum only; never provider messages, credentials, codes, URLs or payloads.';

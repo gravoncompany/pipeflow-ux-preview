@@ -1,0 +1,7 @@
+# Instagram rules (also cover src/lib/instagram*)
+- Instagram OAuth uses a one-time browser-bound flow and reauthorized full-cookie/bearer admin finalization; new account tokens are AES-GCM encrypted with company/account context in service-only storage, while existing secret-based accounts are never replaced, preserving current message delivery.
+- Preserved-account OAuth finalization retains a separate encrypted candidate with bound app/account and verified scopes; it never activates it automatically or erases the legacy credential, preventing loss before an independently verified cutover.
+- OAuth failure diagnostics persist only server-owned stage/reason enums and HTTP status, never provider prose or query parameters; optional dedicated OAuth app secret does not replace the existing webhook-signature secret.
+- OAuth token replies use lossless JSON identity parsing and bounded array/comma-separated permission normalization; never round provider IDs or widen legacy webhook identity handling, so new authorizations remain isolated and existing bindings stay exact.
+- OAuth account binding derives only from authenticated /me.user_id; compare short- and long-token profiles through that same field, never exchange user_id or app_id, to avoid cross-namespace comparisons without weakening token identity checks.
+- Instagram webhook processing preserves every item in independently bounded messaging/changes arrays; never silently truncate their combined candidates, to prevent acknowledged-but-dropped messages.

@@ -1,0 +1,1 @@
+INSERT INTO public.crm_settings (id, zapier_webhook_url, updated_at) VALUES (1, 'https://hooks.zapier.com/hooks/catch/19421884/u0f3hvo/', now()) ON CONFLICT (id) DO UPDATE SET zapier_webhook_url = EXCLUDED.zapier_webhook_url, updated_at = now();

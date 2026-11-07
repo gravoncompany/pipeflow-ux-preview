@@ -1,0 +1,14 @@
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { emailBatchInput, EMAIL_AI_BASES, emailSourceContext, resolveEmailBase, emailSendingEnabled, emailDraftState, prospectCampaignSchema } from "./b2b-email-ai";
+const company={key:"test1",name:"Empresa fictícia",segment:"Odontologia",website:"https://example.test",city:"Curitiba",email:"",services:"",servicesSource:"",source:"Fixture isolada"};
+const bases={odontologia:{subject:EMAIL_AI_BASES.odontologia.subject,body:EMAIL_AI_BASES.odontologia.body},estetica:{subject:EMAIL_AI_BASES.estetica.subject,body:EMAIL_AI_BASES.estetica.body}};
+const input={companies:[company],sender:"Teste",template:"auto",authorized:true,bases};
+test("permite30 e rejeita31 empresas",()=>{assert.equal(emailBatchInput.parse({...input,companies:Array.from({length:30},(_,i)=>({...company,key:String(i)}))}).companies.length,30);assert.equal(emailBatchInput.safeParse({...input,companies:Array.from({length:31},(_,i)=>({...company,key:String(i)}))}).success,false);});
+test("rejeita empresas repetidas",()=>{assert.equal(emailBatchInput.safeParse({...input,companies:[company,company]}).success,false);});
+test("exige autorização de armazenamento e geração",()=>{assert.equal(emailBatchInput.safeParse({...input,authorized:false}).success,false);});
+test("serviços precisam de fonte e nunca são inferidos de site/segmento",()=>{assert.equal(emailBatchInput.safeParse({...input,companies:[{...company,services:"Implantes"}]}).success,false);assert.equal(emailSourceContext(company).servicosIdentificados,null);assert.equal(emailSourceContext(company).fonteServicos,null);});
+test("Instagram não é apresentado como site comercial",()=>{assert.equal(emailSourceContext({...company,website:"https://www.instagram.com/teste/"}).site,null);});
+test("bases adaptam odontologia e estética",()=>{assert.equal(resolveEmailBase("Clínica odontológica","auto"),"odontologia");assert.equal(resolveEmailBase("Estética","auto"),"estetica");});
+test("envio sempre desligado e revisão explícita",()=>{assert.equal(emailSendingEnabled(),false);assert.equal(emailDraftState(false),"draft");assert.equal(emailDraftState(true),"reviewed");});
+test("campanha não aceita ativação",()=>{assert.equal(prospectCampaignSchema.safeParse({name:"Campanha",city:"Curitiba",state:"PR",segments:"Odontologia15 e Estética15",quantity:30,frequency:"weekly",preferWebsite:true,preferInstagram:true,criteria:"",status:"active"}).success,false);});

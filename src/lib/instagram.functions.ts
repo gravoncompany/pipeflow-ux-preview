@@ -1,0 +1,11 @@
+import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
+import { instagramSettings } from "./instagram";
+import { instagramOAuthStartInput } from "./instagram-oauth";
+export const beginInstagramOAuth = createServerFn({ method: "POST" }).inputValidator(i => instagramOAuthStartInput.parse(i)).handler(async ({ data }) => { const { startInstagramOAuth } = await import("./instagram-oauth.server"); return startInstagramOAuth(data.appId); });
+export const completeInstagramOAuth = createServerFn({ method: "POST" }).handler(async () => { const { finishInstagramOAuth } = await import("./instagram-oauth.server"); return finishInstagramOAuth(); });
+export const getInstagram = createServerFn({ method: "POST" }).handler(async () => { const { instagramOverview } = await import("./instagram.server"); return instagramOverview(); });
+export const connectInstagramAccount = createServerFn({ method: "POST" }).handler(async () => { const { connectInstagram } = await import("./instagram.server"); return connectInstagram(); });
+export const saveInstagramSettings = createServerFn({ method: "POST" }).inputValidator(i => z.object({ id: z.string().uuid(), settings: instagramSettings }).strict().parse(i)).handler(async ({ data }) => { const { configureInstagram } = await import("./instagram.server"); return configureInstagram(data.id, data.settings); });
+export const subscribeInstagramAccount = createServerFn({ method: "POST" }).inputValidator(i => z.object({ id: z.string().uuid() }).strict().parse(i)).handler(async ({ data }) => { const { subscribeInstagram } = await import("./instagram.server"); return subscribeInstagram(data.id); });
+export const getInstagramConversation = createServerFn({ method: "POST" }).inputValidator(i => z.object({ contactId: z.string().uuid() }).strict().parse(i)).handler(async ({ data }) => { const { instagramConversation } = await import("./instagram.server"); return instagramConversation(data.contactId); });

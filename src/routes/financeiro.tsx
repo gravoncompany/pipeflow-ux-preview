@@ -1,0 +1,3 @@
+import {createFileRoute} from '@tanstack/react-router';
+import {FinanceManagement} from '@/components/crm/FinanceManagement';
+export const Route=createFileRoute('/financeiro')({head:()=>({meta:[{title:'Financeiro e Crescimento — PipeFlow CRM'},{name:'description',content:'Gestão financeira da Gravon: caixa, contas, DRE por competência, reservas e plano de crescimento de 90 dias.'},{property:'og:title',content:'Financeiro e Crescimento — PipeFlow CRM'},{property:'og:description',content:'Caixa, obrigações, resultado gerencial e metas financeiras da Gravon em um painel privado.'},{property:'og:type',content:'website'},{name:'twitter:card',content:'summary'}]}),component:FinanceManagement});

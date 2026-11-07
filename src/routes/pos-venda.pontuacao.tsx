@@ -1,0 +1,3 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { CustomerSuccessWorkspace } from "@/components/crm/CustomerSuccessWorkspace";
+export const Route = createFileRoute("/pos-venda/pontuacao")({ head: () => ({ meta: [{ title: "Pontuação dos Clientes — Pipeflow" }, { name: "description", content: "Health Score ponderado da Gravon, com cobertura de dados, ranking e histórico de avaliações." }, { property: "og:title", content: "Pontuação dos Clientes — Pipeflow" }, { property: "og:description", content: "Pontuação explicável sem atribuir notas a critérios ausentes." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }), component: () => <CustomerSuccessWorkspace view="pontuacao" /> });

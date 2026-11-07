@@ -1,0 +1,4 @@
+CREATE OR REPLACE FUNCTION public.protect_call_interaction_history() RETURNS trigger LANGUAGE plpgsql SET search_path TO '' AS $$ BEGIN
+ IF NEW.history IS DISTINCT FROM OLD.history AND EXISTS(SELECT 1 FROM jsonb_array_elements(OLD.history) e WHERE e->>'kind' IN ('whatsapp_call','interaction') AND NOT EXISTS(SELECT 1 FROM jsonb_array_elements(NEW.history) n WHERE n->>'id'=e->>'id' AND n=e)) AND coalesce(current_setting('request.jwt.claims',true),'{}')::jsonb->>'role' IS DISTINCT FROM 'service_role' THEN RAISE EXCEPTION 'History changed; reload before saving' USING ERRCODE='40001'; END IF;
+ RETURN NEW;
+END $$;

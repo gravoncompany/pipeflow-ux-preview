@@ -1,0 +1,2 @@
+ALTER TABLE public.instagram_oauth_flows ADD COLUMN app_id text;
+COMMENT ON COLUMN public.instagram_oauth_flows.app_id IS 'Public Instagram application ID bound to the one-time OAuth flow; never an access credential.';

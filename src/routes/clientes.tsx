@@ -26,6 +26,7 @@ import { CLIENT_STATUS } from "@/lib/crm-clients";
 import { ClientForm, clientToForm, emptyClientForm, formToInput } from "@/components/crm/ClientForm";
 import { clearClientListScroll, parseClientListSearch, readClientListState, saveClientListState, type ClientListSearch, type ClientSort } from "@/lib/client-list-state";
 import { KpiCard } from "@/components/crm/ux/KpiCard";
+import { ClientsHubTabs } from "@/components/crm/ux/ClientsHubTabs";
 import { StatusPill, CLIENT_TONE, type StatusTone } from "@/components/crm/ux/StatusPill";
 
 export const Route = createFileRoute("/clientes")({
@@ -165,9 +166,10 @@ function ClientesPage() {
   );
   return (
     <AtendimentoLayout><div className="w-full min-w-0 flex-1 space-y-5 overflow-y-auto p-4 md:p-6">
+      <ClientsHubTabs active="carteira" />
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold">Clientes</h1>
+          <h1 className="text-3xl font-semibold tracking-tight">Clientes</h1>
           <p className="text-sm text-muted-foreground">Carteira da Gravon Company: situação, receita recorrente e o que precisa de atenção.</p>
         </div>
         <Button onClick={() => setEditing({ ...emptyClientForm })}><Plus className="size-4" />Novo cliente</Button>

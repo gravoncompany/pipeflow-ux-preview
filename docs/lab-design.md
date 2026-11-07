@@ -37,3 +37,23 @@ Prévias: [`docs/lab-preview/`](lab-preview/) (imagens e o vídeo `demo-animacoe
 ## Modo demonstração
 O Pipeline agora também abre no modo demonstração, com 14 leads fictícios, e a Visão Geral mostra gráficos calculados pelas
 **mesmas funções do sistema** (`growthMetrics`, `unitEconomics`) sobre uma carteira fictícia.
+
+## Rodada 3 · Clientes, Pós-venda e Prospecção B2B
+
+### Clientes + Pós-venda como uma área só
+- Abas no topo **Carteira de clientes | Pós-venda** ligam a lista de clientes e a gestão de pós-venda (mesmos endereços).
+- No menu de Atendimento, "Gestão de Clientes" passou a se chamar **Pós-venda**.
+- As 6 visões do pós-venda viraram **4 seções**: Acompanhamento · Saúde e risco (Visão da carteira, Clientes em risco, Pontuação) · Renovações · Indicadores.
+  A seção Saúde e risco mostra quantos clientes precisam de atenção.
+- Cartões de saúde **clicáveis** (Saudável, Atenção, Em risco, Sem avaliação) filtram a lista; cartão de MRR ativo.
+- Filtros avançados recolhidos em **Filtros** (com contador e "Limpar filtros"); busca sempre visível.
+- Acompanhamento abre no **quadro por etapa**, com saúde, pontuação, mensalidade, próximo contato e atraso em cada cartão.
+
+### Prospecção B2B em 3 etapas
+- Menu com **3 etapas** em vez de 6 itens: 1 · Encontrar empresas → 2 · Revisar e adicionar → 3 · Primeiro contato.
+- Google Maps, Instagram, Receita Federal e Importar lista viraram **abas da etapa 1** (mesmos endereços; a seleção continua guardada ao trocar de fonte).
+- Barra de etapas no topo com contadores (selecionadas, prontas, a abordar, abordadas); a marca de concluída só aparece com resultado real.
+- Etapa 2: o **caminho rápido** vem primeiro — *1 Identificar CNPJ* → *2 Adicionar ao CRM* para todas as selecionadas de uma vez;
+  a revisão empresa por empresa ficou como **opcional** (lista recolhida em 5, "Ver todas").
+- "Selecionar visíveis" só aparece quando há filtro ativo (antes duplicava "Selecionar todos").
+- Nenhuma regra mudou: mesmas consultas, limites, confirmações, consultas pagas e importação revisada.

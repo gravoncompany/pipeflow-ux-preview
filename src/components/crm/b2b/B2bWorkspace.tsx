@@ -17,6 +17,7 @@ import {
   Check,
 } from "lucide-react";
 import { B2bLayout } from "@/components/crm/B2bLayout";
+import { B2bFlowHeader } from "./B2bFlowHeader";
 import { ReceitaSearchPanel } from "@/components/crm/b2b/ReceitaSearch";
 import { InstagramSearchPanel } from "@/components/crm/b2b/InstagramSearch";
 import { receitaCompany } from "@/lib/receita-federal";
@@ -185,6 +186,7 @@ export function B2bWorkspace() {
     [blockReason, setBlockReason] = useState(""),
     [blockConfirmed, setBlockConfirmed] = useState(false);
   const [aiRequest, setAiRequest] = useState<{nonce:number;companies:EmailCompany[]}|null>(null);
+  const [showAllSelected, setShowAllSelected] = useState(false);
   const location = useRouterState({ select: r => r.location });
   const step: B2bStep = location.pathname.endsWith("/revisar") ? "revisar" : location.pathname.endsWith("/primeiro-contato") ? "contato" : parseB2bStep((location.search as { etapa?: unknown }).etapa) ?? "buscar";
   const origin = location.pathname.endsWith("/receita-federal") ? "receita" : location.pathname.endsWith("/importar-listas") ? "lista" : location.pathname.endsWith("/instagram") ? "instagram" : "maps";
@@ -620,6 +622,7 @@ export function B2bWorkspace() {
           </div>
         </div>
         <div className="mx-auto max-w-7xl space-y-6 px-4 py-5 md:px-10">
+          <B2bFlowHeader step={step} path={location.pathname.replace(/\/+$/, "")} counts={{ selected: selected.length, ready: selectedReady.length, toContact: contactRows.filter((c) => c.stage !== "abordada").length, approached: contactRows.filter((c) => c.stage === "abordada").length }} />
           {error && (
             <p role="alert" className="rounded-md border border-destructive p-4 text-sm text-destructive">{error}</p>
           )}
@@ -744,9 +747,10 @@ export function B2bWorkspace() {
                 <Button size="sm" variant="outline" disabled={Boolean(busy) || !visibleIds.length} onClick={() => setSelected((old) => selectMany(currentB2bSelection(old, places, prepared), visibleIds))}>
                   Selecionar todos ({visibleIds.length})
                 </Button>
-                <Button size="sm" variant="outline" disabled={Boolean(busy) || !visibleIds.length || visibleIds.length === places.length} onClick={() => setSelected((old) => selectMany(old, visibleIds))} title="Seleciona somente os resultados que passam pelos filtros atuais">
+                {/* Só aparece quando há filtro ativo (senão faz o mesmo que "Selecionar todos"). */}
+                {visibleIds.length > 0 && visibleIds.length !== places.length && <Button size="sm" variant="outline" disabled={Boolean(busy)} onClick={() => setSelected((old) => selectMany(old, visibleIds))} title="Seleciona somente os resultados que passam pelos filtros atuais">
                   Selecionar visíveis ({visibleIds.length})
-                </Button>
+                </Button>}
                 {selected.length > 0 && (
                   <Button size="sm" variant="ghost" disabled={Boolean(busy)} onClick={() => setSelected([])}>
                     Desmarcar todos
@@ -1126,12 +1130,31 @@ export function B2bWorkspace() {
           </section>
           </>}
           {step === "revisar" && <>
+          {/* Caminho rápido primeiro: identificar CNPJ e adicionar todas de uma vez. */}
+          <div className="space-y-2">
+            <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-primary"><span className="btn-brand inline-flex size-5 items-center justify-center rounded-full text-[10px] text-primary-foreground">⚡</span>Caminho rápido · todas de uma vez</p>
+          <B2bBulkBar
+              selected={selected}
+              places={places}
+              prepared={{ ...enriched, ...prepared }}
+              search={searched}
+              pipelines={pipelines.data ?? []}
+              mainStages={mainStages}
+              busy={Boolean(busy)}
+              onPrepared={(updates) => setEnriched((old) => ({ ...old, ...updates }))}
+              onCnpjStatus={(updates) => setCnpjStatus((old) => ({ ...old, ...updates }))}
+              onImported={(count) => setImported((n) => n + count)}
+              onCreatedLeads={(ids) => { setEnrichLeadIds((old) => [...new Set([...old, ...ids])]); setSessionLeadIds((old) => [...new Set([...old, ...ids])]); }}
+              onClear={() => setSelected([])}
+            />
+          </div>
           <section className="space-y-4 rounded-xl border bg-card p-4 md:p-5" aria-label="Revisar selecionadas">
             <div className="grid gap-3 sm:flex sm:flex-wrap sm:items-start sm:justify-between">
               <div className="min-w-0">
-                <h2 className="text-lg font-semibold">Revisar selecionadas</h2>
+                <h2 className="text-lg font-semibold">Revisão individual <span className="text-sm font-normal text-muted-foreground">(opcional)</span></h2>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  Confira os dados de cada empresa, remova o que não quiser e prepare os cadastros. O cadastro mantém a origem Prospecção B2B e o status Aguardando primeiro contato.
+                  Para conferir ou completar os dados de uma empresa antes de cadastrar, use <em>Preparar cadastro</em>. Se não precisar, use o caminho rápido acima.
+                  O cadastro mantém a origem Prospecção B2B e o status Aguardando primeiro contato.
                 </p>
               </div>
               <div className="flex flex-wrap gap-2">
@@ -1157,7 +1180,7 @@ export function B2bWorkspace() {
               </div>
             ) : (
               <ul className="divide-y rounded-lg border">
-                {selectedRows.map(({ key, place, company, ready }) => {
+                {(showAllSelected ? selectedRows : selectedRows.slice(0, 5)).map(({ key, place, company, ready }) => {
                   const name = company?.tradeName || company?.legalName || place?.name || "Empresa sem nome";
                   return (
                     <li key={key} className="grid gap-3 p-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
@@ -1184,6 +1207,7 @@ export function B2bWorkspace() {
                 })}
               </ul>
             )}
+            {selectedRows.length > 5 && <Button variant="ghost" size="sm" className="w-full" onClick={() => setShowAllSelected((v) => !v)}>{showAllSelected ? "Mostrar menos" : `Ver todas as ${selectedRows.length} empresas`}</Button>}
             {preparedOutside.length > 0 && (
               <details className="text-sm">
                 <summary className="cursor-pointer font-medium text-primary">Cadastros preparados fora da seleção ({preparedOutside.length})</summary>
@@ -1198,23 +1222,10 @@ export function B2bWorkspace() {
               </details>
             )}
           </section>
-          <B2bBulkBar
-            selected={selected}
-            places={places}
-            prepared={{ ...enriched, ...prepared }}
-            search={searched}
-            pipelines={pipelines.data ?? []}
-            mainStages={mainStages}
-            busy={Boolean(busy)}
-            onPrepared={(updates) => setEnriched((old) => ({ ...old, ...updates }))}
-            onCnpjStatus={(updates) => setCnpjStatus((old) => ({ ...old, ...updates }))}
-            onImported={(count) => setImported((n) => n + count)}
-            onCreatedLeads={(ids) => { setEnrichLeadIds((old) => [...new Set([...old, ...ids])]); setSessionLeadIds((old) => [...new Set([...old, ...ids])]); }}
-            onClear={() => setSelected([])}
-          />
           <PublicEnrichmentProgress leadIds={enrichLeadIds} />
           <section className="rounded-xl border bg-card p-4 md:p-5" aria-label="Adicionar ao CRM">
-            <h2 className="text-lg font-semibold">Adicionar ao CRM</h2>
+            <h2 className="text-lg font-semibold">Adicionar as revisadas uma a uma</h2>
+            <p className="mt-1 text-sm text-muted-foreground">Cadastra somente as empresas que passaram por <em>Preparar cadastro</em>.</p>
             <div className="mt-4 flex flex-wrap items-end gap-4">
               <div className="min-w-48 flex-1">
                 <Label htmlFor="b2b-pipeline">Funil de destino</Label>

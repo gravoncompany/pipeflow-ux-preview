@@ -19,6 +19,8 @@ export type AreaMenuItem = {
   icon: ComponentType<{ className?: string }>;
   /** Também marca o item nas páginas internas (ex.: /clientes/$id). */
   nested?: boolean;
+  /** Outros caminhos em que o item também fica ativo (ex.: fontes de busca da etapa 1 da Prospecção B2B). */
+  also?: readonly string[];
 };
 export type AreaMenuGroup = { label?: string; items: readonly AreaMenuItem[] };
 

@@ -36,6 +36,8 @@ Abra o endereço "Local" que aparecer no terminal e navegue:
 | Visão Geral | `/dashboard` |
 | Configurações | `/configuracoes` |
 | Pipeline e card do lead | `/` (clique em um card) |
+| Pós-venda | `/pos-venda` · `/pos-venda/risco` |
+| Prospecção B2B (3 etapas) | `/prospeccao-b2b` (busque e selecione) → `/prospeccao-b2b/revisar` |
 | Busca global | `Ctrl+K` (ou ⌘K) em qualquer tela |
 
 Telas que dependem de integrações (WhatsApp, campanhas, IA etc.) abrem, mas mostram "indisponível" no modo demonstração.

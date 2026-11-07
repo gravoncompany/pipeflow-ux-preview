@@ -6,6 +6,8 @@
 import { growthMetrics, type GrowthClient, type GrowthHistory } from "@/lib/dashboard-growth";
 import { unitEconomics } from "@/lib/dashboard-unit-economics";
 import type { OverviewRow } from "@/lib/bank-overview";
+import { clientFinance, contractMrr, healthScore, parseManagement } from "@/lib/customer-success-management";
+import { B2B_TABLES } from "@/lib/b2b-readiness";
 
 const pad = (n: number) => String(n).padStart(2, "0");
 const id = (n: number) => `00000000-0000-4000-8000-${String(n).padStart(12, "0")}`;
@@ -58,9 +60,42 @@ function buildData() {
   };
   const renewals = [120, 13, 24, 180, 21, 70];
   const health = ["saudavel", "em_risco", "atencao", null, "saudavel", "atencao", "saudavel", null];
+  // Pós-venda: mesmas funções puras do servidor (parseManagement, clientFinance, healthScore, contractMrr).
+  const csStage = ["acompanhamento", "renovacao", "acompanhamento", "implementacao", "acompanhamento", "onboarding", "novo", "encerrado"];
+  const commercial = ["crescimento", "cancelamento", "revisar", null, "upsell", "inatividade", "saudavel", null];
+  const crit = (v: number, why: string) => ({ value: v, reason: why, source: "Registro de exemplo (demonstração)", evaluatedAt: `${addDays(today, -5)}T12:00:00.000Z` });
+  const critSets = [
+    { satisfaction: crit(90, "Cliente elogiou os resultados na última reunião."), engagement: crit(85, "Responde rápido e participa das reuniões."), results: crit(80, "Metas do trimestre atingidas."), contract: crit(90, "Contrato vigente e renovado.") },
+    { satisfaction: crit(35, "Reclamou do atraso nas entregas."), engagement: crit(40, "Sem resposta há 3 semanas."), results: crit(45, "Resultados abaixo do combinado."), contract: crit(50, "Renovação próxima sem conversa.") },
+    { satisfaction: crit(65, "Satisfeito, mas pediu ajustes."), engagement: crit(60, "Participa de forma irregular."), results: crit(70, "Resultados estáveis.") },
+    { satisfaction: crit(75, "Início positivo da implantação.") },
+    { satisfaction: crit(88, "Pediu proposta de novos serviços."), engagement: crit(90, "Contato semanal."), results: crit(85, "Crescimento de vendas."), contract: crit(80, "Contrato anual.") },
+    { engagement: crit(30, "Pausou o serviço."), results: crit(50, "Sem dados recentes.") },
+    { satisfaction: crit(80, "Feedback positivo."), engagement: crit(75, "Bom relacionamento.") },
+    {},
+  ];
+  const day = today;
   const cs = {
-    today, revenueMonthly: [],
-    clients: clients.map((c, i) => ({ ...c, health: health[i], mrrCents: amounts[i], management: { contracts: i < 6 ? [{ id: id(500 + i), title: "Contrato", renewal: addDays(today, renewals[i]), status: "ativo", amountCents: amounts[i] }] : [] }, finance: { overdueCents: 0 } })),
+    today, revenueMonthly: {},
+    clients: clients.map((c, i) => {
+      const management = parseManagement({
+        accountStatus: null, commercialStatus: commercial[i], nextFollowup: addDays(today, [3, -4, 7, 1, 10, -12, 5, 30][i]),
+        contracts: i < 6 ? [{ id: id(500 + i), title: "Contrato de serviços", start: `${year}-02-01`, renewal: addDays(today, renewals[i]), termMonths: 12, amountCents: amounts[i], billing: "mensal", billingMonths: 1, status: i === 5 ? "pausado" : "ativo", responsible: c.internal_responsible, note: "" }] : [],
+        criteria: critSets[i],
+      });
+      const own = charges.filter((x) => x.client_id === c.id).map((x) => ({ id: String(x.id), amount: Number(x.amount), due_date: String(x.due_date), status: String(x.status) }));
+      const pays = payments.map((p) => ({ id: String(p.id), charge_id: String(p.charge_id), amount: Number(p.amount), paid_at: String(p.paid_at), confirmed_by: "Demonstração" }));
+      const finance = clientFinance(own, pays, day);
+      const criteria = { ...management.criteria, finance: finance.criterion ?? management.criteria.finance };
+      const score = healthScore(criteria);
+      const last = addDays(today, -[6, 25, 12, 2, 4, 40, 9, 90][i]);
+      return {
+        ...c, stage: csStage[i], health: health[i], revision: 0, last_followup_at: `${last}T12:00:00.000Z`, management,
+        accountStatus: ({ ativo: "ativo", pausado: "pausado", encerrado: "encerrado", implantacao: "implementacao" } as Record<string, string>)[c.status] ?? "novo",
+        finance, criteria, score, scores: [], lastContact: `${last}T12:00:00.000Z`, summary: i === 1 ? "Risco de cancelamento: atraso no pagamento e baixa resposta (exemplo)." : "Dados insuficientes para análise",
+        suggestion: null, mrrCents: contractMrr(management.contracts, day), tasks: [], recoveryProgress: i === 1 ? 33 : null, history: [],
+      };
+    }),
   };
   const counts = { ativo: 5, implantacao: 1, pausado: 1, encerrado: 1 };
   const months = Array.from({ length: 12 }, (_, i) => ({ month: `${year}-${pad(i + 1)}`, revenueCents: i + 1 <= curMonth ? 700000 + i * 45000 + (i % 3) * 30000 : null, incomplete: i + 1 === curMonth, empty: i + 1 > curMonth }));
@@ -108,6 +143,20 @@ function buildData() {
   }));
   const handlers: Record<string, (body: string) => unknown> = {
     getDashboardGrowth: (body) => demoGrowth(body),
+    // Prospecção B2B: configuração "pronta" e resultados fictícios de busca (sem Google, sem consultas pagas).
+    getB2bOverview: () => ({
+      enabled: true, googleKeyConfigured: true, googleReady: true, deskReady: false, datasets: [], googleDailyLimit: 50, deskDailyLimit: 20,
+      termsUrl: "https://exemplo.invalid/termos", privacyUrl: "https://exemplo.invalid/privacidade", databaseReady: true,
+      databaseChecks: B2B_TABLES.map((table) => ({ table, status: "ready" })), todayRequests: [], companies: [], drafts: [], suppressions: [], approaches: [],
+    }),
+    searchB2b: (body) => {
+      const seg = /"segment":"([^"]+)"/.exec(body.replace(/\\"/g, '"'))?.[1] ?? "Clínica odontológica";
+      const city = /"city":"([^"]+)"/.exec(body.replace(/\\"/g, '"'))?.[1] ?? "Florianópolis";
+      const names = ["Sorriso", "Bem Estar", "Vida Plena", "Central", "Prime", "Excelência", "Nova Era", "Saúde Total", "Família", "Premium", "Integrada", "Moderna"];
+      return { places: names.map((n, i) => ({ id: `demo_place_${i + 1}`, name: `${seg} ${n} (exemplo)`, address: `Rua Fictícia, ${100 + i * 7} — ${city}`, phone: i % 3 === 2 ? "" : `+55489990000${String(10 + i)}`,
+        website: i % 2 ? `https://exemplo${i + 1}.invalid` : "", category: seg, mapsUrl: "https://exemplo.invalid/mapa", rating: i % 4 === 3 ? null : Math.round((3.8 + (i % 6) * 0.2) * 10) / 10,
+        userRatingCount: i % 4 === 3 ? null : 12 + i * 9, instagram: i % 3 === 0 ? `@exemplo_${i + 1}` : "", attributions: [] })), cursor: null };
+    },
     listCrmLeads: () => leads, listPipelines: () => [], getCrmZapierSetting: () => "", listLeadClientLinks: () => ({ links: [] }),
     getReceiptControl: () => receipt, listClients: () => ({ clients, counts }), getCsOverview: () => cs, getClientCardLinks: () => ({ links: [] }),
     getCrmAccess: () => ({ full: true }), getFinance: () => ({ months: [], traffic: [], updatedAt: null, error: null, needsAuth: false }),

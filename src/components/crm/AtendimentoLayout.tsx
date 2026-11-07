@@ -9,7 +9,7 @@ export const ATENDIMENTO_GROUPS = [
   ] },
   { label: "Clientes", items: [
     { to: "/clientes", label: "Clientes", icon: Briefcase, nested: true },
-    { to: "/pos-venda", label: "Gestão de Clientes", icon: Activity, nested: true },
+    { to: "/pos-venda", label: "Pós-venda", icon: Activity, nested: true },
     { to: "/tarefas", label: "Tarefas", icon: ListTodo, nested: true },
     { to: "/contatos", label: "Todos os contatos", icon: Users },
   ] },

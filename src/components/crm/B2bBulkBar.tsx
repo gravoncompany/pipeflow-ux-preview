@@ -113,11 +113,12 @@ export function B2bBulkBar({ selected, places, prepared, search, pipelines, main
   return <div className="space-y-2 rounded-xl border border-primary/40 bg-card p-3 text-sm" role="region" aria-label="Ações em massa">
     <div className="flex flex-wrap items-center gap-2">
       <span className="font-semibold">{chosen.length} empresa(s) selecionada(s)</span>
-      <Button size="sm" disabled={disabled} onClick={() => void copyEmails()}>Copiar todos os e-mails</Button>
+      <Button size="sm" disabled={disabled} onClick={() => void identify()}><span className="rounded-full bg-white/25 px-1.5 text-[10px]">1</span>{working === "identify" ? "Identificando…" : "Identificar CNPJ"}</Button>
+      <Button size="sm" disabled={disabled} onClick={() => { setDialog(v => !v); setStageId(""); }}><span className="rounded-full bg-white/25 px-1.5 text-[10px]">2</span>Adicionar ao CRM</Button>
+      <span className="mx-1 hidden h-5 w-px bg-border sm:block" aria-hidden />
+      <Button size="sm" variant="outline" disabled={disabled} onClick={() => void copyEmails()}>Copiar todos os e-mails</Button>
       <Button size="sm" variant="outline" disabled={disabled} onClick={() => void copyPhones()}>Copiar telefones</Button>
       <Button size="sm" variant="outline" disabled={disabled} onClick={exportCsv}>Exportar contatos</Button>
-      <Button size="sm" variant="outline" disabled={disabled} onClick={() => void identify()}>{working === "identify" ? "Identificando…" : "Identificar CNPJ"}</Button>
-      <Button size="sm" variant="outline" disabled={disabled} onClick={() => { setDialog(v => !v); setStageId(""); }}>Adicionar ao CRM</Button>
       <Button size="sm" variant="ghost" disabled={disabled} onClick={onClear}>Desmarcar todos</Button>
     </div>
     {dialog && <div className="space-y-2 rounded-lg border p-3">

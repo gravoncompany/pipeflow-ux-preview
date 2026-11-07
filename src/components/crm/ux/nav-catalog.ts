@@ -9,7 +9,7 @@ import { MARKETING_GROUPS } from "../marketing/marketing-nav";
 export type CatalogPage = { to: string; label: string; area: string; keywords?: string };
 
 const ATENDIMENTO = [
-  { to: "/whatsapp", label: "Conversas" }, { to: "/clientes", label: "Clientes" }, { to: "/pos-venda", label: "Gestão de Clientes" },
+  { to: "/whatsapp", label: "Conversas" }, { to: "/clientes", label: "Clientes" }, { to: "/pos-venda", label: "Pós-venda (Gestão de Clientes)" },
   { to: "/pos-venda/saude", label: "Saúde dos Clientes" }, { to: "/pos-venda/risco", label: "Clientes em Risco" }, { to: "/pos-venda/renovacoes", label: "Renovações" },
   { to: "/pos-venda/indicadores", label: "Indicadores de CS" }, { to: "/pos-venda/pontuacao", label: "Pontuação" },
   { to: "/tarefas", label: "Tarefas" }, { to: "/contatos", label: "Todos os contatos" }, { to: "/agenda", label: "Calendário" }, { to: "/agenda/reunioes", label: "Lista de reuniões" },

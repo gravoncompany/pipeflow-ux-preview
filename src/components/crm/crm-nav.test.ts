@@ -56,3 +56,9 @@ test("submenu mantém Clientes destacado na ficha interna do cliente", () => {
   assert.equal(isAreaItemActive(todos, "/clientes/123"), false);
   assert.equal(isAreaItemActive(todos, "/contatos/"), true);
 });
+
+test("Prospecção B2B: a etapa 1 fica ativa em todas as fontes de busca, e só nelas", () => {
+  const step1 = { to: "/prospeccao-b2b", also: ["/prospeccao-b2b/instagram", "/prospeccao-b2b/receita-federal", "/prospeccao-b2b/importar-listas"] };
+  for (const p of ["/prospeccao-b2b", "/prospeccao-b2b/instagram", "/prospeccao-b2b/receita-federal/", "/prospeccao-b2b/importar-listas"]) assert.equal(isAreaItemActive(step1, p), true, p);
+  for (const p of ["/prospeccao-b2b/revisar", "/prospeccao-b2b/primeiro-contato"]) assert.equal(isAreaItemActive(step1, p), false, p);
+});

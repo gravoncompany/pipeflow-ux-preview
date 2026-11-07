@@ -4,7 +4,7 @@ Cópia independente do Pipeflow com as melhorias de navegação, leitura e layou
 ficha do cliente, Visão Geral, Metas e Configurações). **Mesmas cores e identidade visual** do Pipeflow.
 
 - **Laboratório de design moderno** (menu animado, card do lead unificado, dashboard e gráficos novos): [`docs/lab-design.md`](docs/lab-design.md) · prévias em [`docs/lab-preview/`](docs/lab-preview/)
-- O que mudou na primeira rodada (UX), tela a tela: [`docs/ux-melhorias.md`](docs/ux-melhorias.md) · versão anterior na tag `ux-v1`
+- O que mudou na primeira rodada (UX), tela a tela: [`docs/ux-melhorias.md`](docs/ux-melhorias.md) · versão anterior no branch `ux-v1`
 - Prévias das telas (dados fictícios): [`docs/ux-preview/`](docs/ux-preview/)
 
 > Esta cópia **não** se conecta ao banco de produção. Não há senhas, tokens nem dados reais de clientes no repositório.

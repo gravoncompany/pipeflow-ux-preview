@@ -1,7 +1,7 @@
 # Laboratório de design moderno
 
 Segunda rodada da versão experimental: visual mais moderno, com movimento e leitura mais limpa,
-**mantendo a mesma paleta azul/azul-marinho do Pipeflow e todas as funções**. A versão anterior (só UX) está na tag `ux-v1`.
+**mantendo a mesma paleta azul/azul-marinho do Pipeflow e todas as funções**. A versão anterior (só UX) está no branch `ux-v1`.
 
 Prévias: [`docs/lab-preview/`](lab-preview/) (imagens e o vídeo `demo-animacoes.webm`).
 

@@ -39,11 +39,12 @@ export function LeadCard({ lead, onClick, selected, onSelect, onClosedValue }: {
         if (!isDragging) onClick();
         e.stopPropagation();
       }}
-      className="group cursor-grab active:cursor-grabbing rounded-xl border border-border bg-card p-3 shadow-sm transition-all hover:shadow-md hover:border-primary/40"
+      className="surface surface-hover lab-fade group relative cursor-grab overflow-hidden rounded-xl border border-border/80 bg-card p-3 active:cursor-grabbing active:scale-[0.98]"
     >
       <div className="flex items-start justify-between gap-2">
         {onSelect && <span onPointerDown={e=>e.stopPropagation()} onClick={e=>e.stopPropagation()}><Checkbox aria-label={`Selecionar ${lead.name}`} checked={selected} onCheckedChange={v=>onSelect(v===true)} /></span>}
-        <div className="min-w-0">
+        <span className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary/15 to-chart-2/20 text-[11px] font-semibold text-primary ring-1 ring-primary/15 transition-transform duration-300 group-hover:scale-105" aria-hidden>{lead.name.trim().split(/\s+/).slice(0, 2).map((w) => w[0]?.toUpperCase() ?? "").join("")}</span>
+        <div className="min-w-0 flex-1">
           <h4 className="font-semibold text-sm text-card-foreground truncate">{lead.name}</h4>
           <div className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground truncate">
             <Building2 className="h-3 w-3 shrink-0" />

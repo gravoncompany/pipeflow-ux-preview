@@ -3,6 +3,10 @@
 // dados FICTÍCIOS, para visualizar a interface sem banco de dados. Nenhum dado real, nenhuma
 // gravação e nenhum envio: qualquer operação de escrita retorna erro de "modo demonstração".
 
+import { growthMetrics, type GrowthClient, type GrowthHistory } from "@/lib/dashboard-growth";
+import { unitEconomics } from "@/lib/dashboard-unit-economics";
+import type { OverviewRow } from "@/lib/bank-overview";
+
 const pad = (n: number) => String(n).padStart(2, "0");
 const id = (n: number) => `00000000-0000-4000-8000-${String(n).padStart(12, "0")}`;
 
@@ -71,7 +75,7 @@ function buildData() {
     charges, payments, clients: clients.map((c) => ({ id: c.id, trade_name: c.trade_name })), audit: [], personalAllowed: false, personal: false,
   };
   const lead = (n: number, name: string, company: string, detail: string, at: string) => ({ id: id(n), name, company, stage: "novo", pipelineId: null, pipelineName: "Principal", detail, at });
-  const todayData = { today, awaiting: [lead(1001, "Lead Exemplo", "Empresa A", "", `${today}T09:00:00-03:00`), lead(1002, "Lead Demo", "Empresa B", "", `${addDays(today, -1)}T15:00:00-03:00`)], returnsToday: [], overdue: [lead(1003, "Lead Teste", "Empresa C", "Retorno combinado", `${addDays(today, -2)}T10:00:00-03:00`)], meetings: [] };
+  const todayData = { today, awaiting: [lead(1001, "Lead Exemplo", "Empresa A", "", `${today}T09:00:00-03:00`), lead(1002, "Lead Demo", "Empresa B", "", `${addDays(today, -1)}T15:00:00-03:00`)], returnsToday: [], overdue: [{ ...lead(1003, "Lead Teste", "Empresa C", "Retorno combinado", addDays(today, -2)), daysLate: 2 }], meetings: [] };
   const detail = (cid: string) => {
     const c = clients.find((x) => x.id === cid) ?? clients[0];
     const own = charges.filter((x) => x.client_id === c.id);
@@ -83,7 +87,28 @@ function buildData() {
       finance: { previsto: 0, pendente: 0, vencido: 0, recebido: 0 }, linkedInstagram: "", conversationKey: "", conversationInstance: "",
     };
   };
+  // Funil (Pipeline) com leads fictícios distribuídos pelas etapas, para abrir os cards.
+  const people = ["Mariana Alves", "Rafael Costa", "Juliana Rocha", "Pedro Lima", "Camila Souza", "Lucas Martins", "Beatriz Nunes", "Thiago Ramos", "Larissa Melo", "Gustavo Pires", "Fernanda Dias", "André Lopes", "Patrícia Gomes", "Diego Barros"];
+  const companies = ["Clínica Sorriso Exemplo", "Academia Movimento Demo", "Padaria Pão Fictício", "Estética Bella Teste", "Odonto Prime Modelo", "Pet Amigo Ilustrativo", "Studio Fit Amostra", "Restaurante Sabor Demo", "Loja Moda Exemplo", "Imobiliária Casa Teste", "Escola Saber Modelo", "Ótica Visão Demo", "Barbearia Estilo Teste", "Café Aroma Fictício"];
+  const stagesSeq = ["lead-novo", "lead-novo", "tentando-contato", "tentando-contato", "contato-realizado", "qualificacao", "qualificacao", "mql", "sql", "reuniao-agendada", "reuniao-agendada", "aguardando-decisao", "fechado", "perda"];
+  const sources = ["Instagram", "Indicação", "Site", "Google Ads", "Meta Ads", "Instagram", "Site", "Indicação", "Meta Ads", "Google Ads", "Instagram", "Site", "Indicação", "Instagram"];
+  const tagSeq = [["quente"], ["morno"], ["frio"], ["urgente", "quente"], ["alto-potencial"], ["morno"], [], ["quente"], ["alto-potencial"], ["reuniao-marcada"], ["reuniao-marcada", "quente"], ["morno"], ["cliente-fechado"], ["perdido"]];
+  const leads = people.map((name, i) => ({
+    id: id(3000 + i), pipelineId: null, name, company: companies[i], whatsapp: "", email: `contato${i + 1}@exemplo.invalid`, instagram: `@exemplo${i + 1}`, website: "",
+    investedTraffic: i % 2 ? "Sim" : "Não", revenue: ["R$ 30 mil/mês", "R$ 80 mil/mês", "R$ 150 mil/mês"][i % 3], employees: ["1-10", "10-50", "50-100"][i % 3],
+    source: sources[i], utmSource: i % 4 === 3 ? "google" : undefined, utmCampaign: i % 4 === 3 ? "campanha-exemplo" : undefined,
+    service: ["Tráfego pago", "Social media", "Site + SEO", "CRM"][i % 4], potentialValue: [2500, 4800, 1800, 7200, 3500][i % 5], closedValue: stagesSeq[i] === "fechado" ? 4200 : null,
+    owner: i % 2 ? "Responsável B" : "Responsável A", entryDate: addDays(today, -(i * 3 + 1)), nextAction: ["Ligar para apresentar proposta", "Enviar portfólio", "Confirmar reunião", "Follow-up por WhatsApp"][i % 4],
+    nextActionDate: addDays(today, (i % 5) - 2), status: "Em andamento", stage: stagesSeq[i], tags: tagSeq[i], notes: i % 3 === 0 ? "Lead demonstrou interesse em começar no próximo mês (exemplo)." : "",
+    lastConversation: "", nextSteps: "",
+    history: [
+      { id: id(4000 + i * 3), date: `${addDays(today, -(i + 1))}T14:20:00Z`, text: "Ligação realizada — cliente pediu proposta (exemplo)", kind: "ligacao", result: "atendeu", responsible: "Responsável A" },
+      { id: id(4001 + i * 3), date: `${addDays(today, -(i * 3 + 1))}T10:00:00Z`, text: `Lead criado via ${sources[i]}`, kind: "criacao" },
+    ],
+  }));
   const handlers: Record<string, (body: string) => unknown> = {
+    getDashboardGrowth: (body) => demoGrowth(body),
+    listCrmLeads: () => leads, listPipelines: () => [], getCrmZapierSetting: () => "", listLeadClientLinks: () => ({ links: [] }),
     getReceiptControl: () => receipt, listClients: () => ({ clients, counts }), getCsOverview: () => cs, getClientCardLinks: () => ({ links: [] }),
     getCrmAccess: () => ({ full: true }), getFinance: () => ({ months: [], traffic: [], updatedAt: null, error: null, needsAuth: false }),
     getFinanceManagement: () => snapshot,
@@ -102,11 +127,48 @@ function exportName(url: string) {
   } catch { return ""; }
 }
 
+/** Crescimento e unit economics: as MESMAS funções de cálculo do sistema, alimentadas com uma carteira fictícia. */
+function demoGrowth(body: string) {
+  const today = todayISO();
+  const range = /"from":"(\d{4}-\d{2}-\d{2})","to":"(\d{4}-\d{2}-\d{2})"/.exec(body.replace(/\\"/g, '"')) ?? [];
+  const from = range[1] ?? addDays(today, -365), to = range[2] ?? today;
+  const monthStart = (back: number) => { const d = new Date(`${today.slice(0, 7)}-01T12:00:00Z`); d.setUTCMonth(d.getUTCMonth() - back); return d.toISOString().slice(0, 10); };
+  const amounts = [180000, 120000, 250000, 90000, 150000, 80000, 110000, 210000, 95000, 130000];
+  const joinBack = [14, 13, 12, 10, 9, 7, 6, 4, 3, 1];
+  const contract = (i: number, start: string, status = "ativo") => ({ id: id(7000 + i), title: "Serviço recorrente", start, renewal: null, termMonths: null, amountCents: amounts[i], billing: "mensal", billingMonths: 1, status, responsible: "", note: "" });
+  const clients: GrowthClient[] = amounts.map((_, i) => ({ id: id(6000 + i), status: i === 5 ? "encerrado" : "ativo", created_at: `${monthStart(joinBack[i])}T12:00:00Z`, updated_at: `${today}T12:00:00Z`,
+    management: { contracts: [contract(i, monthStart(joinBack[i]), i === 5 ? "cancelado" : "ativo")] } }));
+  const history: GrowthHistory[] = [];
+  amounts.forEach((_, i) => {
+    for (let back = joinBack[i]; back >= 0; back--) {
+      const cancelled = i === 5 && back <= 2;
+      history.push({ id: id(8000 + i * 20 + back), client_id: id(6000 + i), created_at: `${monthStart(back)}T12:00:00Z`, before_state: null,
+        after_state: { management: { contracts: [contract(i, monthStart(joinBack[i]), cancelled ? "cancelado" : "ativo")], ...(cancelled ? { accountStatus: "encerrado" } : {}) } } });
+    }
+  });
+  const result = growthMetrics(clients, history, from, to, today);
+  const rows: OverviewRow[] = [];
+  const receipts: { amountCents: number; date: string }[] = [];
+  for (let back = 13; back >= 0; back--) {
+    const m = monthStart(back);
+    const active = amounts.filter((_, i) => joinBack[i] >= back && !(i === 5 && back <= 2));
+    receipts.push({ amountCents: active.reduce((n, a) => n + a, 0), date: addDays(m, 9) });
+    const exp = (n: number, cat: string, cents: number) => rows.push({ transactionId: id(9000 + back * 10 + n), transactionAt: `${addDays(m, 12 + n)}T12:00:00Z`, amountCents: -cents, currency: "BRL", direction: "DEBITO", description: cat, counterparty: null, cls: { kind: "despesa_operacional", category: cat as never, vendor: null, source: "manual" as never }, status: "confirmado", reconciled: false });
+    exp(1, "publicidade_marketing", 180000 + back * 4000); exp(2, "fornecedores", 220000); exp(3, "impostos", 90000 + (13 - back) * 3000); exp(4, "softwares_assinaturas", 75000);
+  }
+  const sales = amounts.map((_, i) => ({ customerKey: id(6000 + i), saleType: "nova", firstAcquisition: true, closedOn: monthStart(joinBack[i]) }));
+  const unit = unitEconomics({ rows, receipts, from, to, sales, pendingSales: () => 0, arpa: result.metrics.ticket.value, churnPct: result.metrics.churn.value });
+  const names = ["Clínica Exemplo", "Padaria Modelo", "Academia Demo", "Odonto Teste", "Loja Fictícia", "Estúdio Amostra", "Pet Shop Ilustrativo", "Imobiliária Teste", "Café Demo", "Escola Modelo"];
+  return { needsAuth: false, data: { ...result, topClients: result.topClients.map((t) => ({ ...t, name: names[Number(t.id.slice(-2)) % 10] ?? "Cliente" })), unit } };
+}
+
 /** Instala o interceptador de funções de servidor no navegador (somente com VITE_UX_DEMO=1). */
 export function installUxDemo() {
   if (typeof window === "undefined" || (window as { __pipeflowUxDemo?: boolean }).__pipeflowUxDemo) return;
   (window as { __pipeflowUxDemo?: boolean }).__pipeflowUxDemo = true;
   const handlers = buildData();
+  // No modo demonstração o portão do Pipeline já abre com acesso completo (dados fictícios).
+  try { window.sessionStorage.setItem("crm-access-level", "full"); } catch { /* sem armazenamento */ }
   const original = window.fetch.bind(window);
   window.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
     const url = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;

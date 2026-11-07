@@ -40,7 +40,8 @@ export function KanbanColumn({
   const total = leads.reduce((s, l) => s + (l.potentialValue || 0), 0);
 
   return (
-    <div className="flex w-72 shrink-0 flex-col rounded-2xl bg-muted/40 p-2">
+    <div className="lab-rise relative flex w-72 shrink-0 flex-col overflow-hidden rounded-2xl border border-border/60 bg-muted/35 p-2 backdrop-blur">
+      <span className={`absolute inset-x-0 top-0 h-[3px] ${stageId === "fechado" ? "bg-gradient-to-r from-success to-success/30" : stageId === "perda" ? "bg-gradient-to-r from-destructive/70 to-destructive/20" : "bg-gradient-to-r from-primary to-chart-2/60"}`} aria-hidden />
       <div className="px-2 pb-2 pt-1">
         <div className="flex items-center justify-between gap-1">
           {onSelectColumn && <Checkbox aria-label={`Selecionar coluna ${title}`} checked={leads.length>0&&leads.every(l=>selectedIds?.includes(l.id))} disabled={!leads.length} onCheckedChange={v=>onSelectColumn(leads.map(l=>l.id),v===true)} />}
@@ -80,12 +81,12 @@ export function KanbanColumn({
             </span>
           </div>
         </div>
-        <p className="mt-0.5 text-xs text-muted-foreground">{currency(total)}</p>
+        <p className="mt-0.5 text-xs font-medium tabular-nums text-muted-foreground">{currency(total)}</p>
       </div>
       <div
         ref={setNodeRef}
         className={`flex flex-1 flex-col gap-2 rounded-xl p-1.5 transition-colors ${
-          isOver ? "bg-primary/10 ring-2 ring-primary/40" : ""
+          isOver ? "bg-primary/10 ring-2 ring-primary/40 scale-[1.01]" : ""
         }`}
         style={{ minHeight: 100 }}
       >
@@ -93,7 +94,7 @@ export function KanbanColumn({
           <LeadCard key={lead.id} lead={lead} onClick={() => onCardClick(lead)} selected={selectedIds?.includes(lead.id)} onSelect={onSelect?checked=>onSelect(lead.id,checked):undefined} onClosedValue={onClosedValue ? () => onClosedValue(lead) : undefined} />
         ))}
         {leads.length === 0 && (
-          <div className="flex h-20 items-center justify-center text-xs text-muted-foreground/60">
+          <div className="flex h-20 items-center justify-center rounded-xl border border-dashed border-border text-xs text-muted-foreground/70">
             Arraste leads aqui
           </div>
         )}

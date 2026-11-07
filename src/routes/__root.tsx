@@ -170,7 +170,7 @@ function RootComponent() {
         <Outlet />
       </ConfirmProvider>
       <Toaster />
-      {UX_DEMO && <div role="status" className="pointer-events-none fixed top-2 left-1/2 z-[100] -translate-x-1/2 rounded-full bg-primary px-3 py-1 text-xs font-medium text-primary-foreground shadow-lg">Modo demonstração · dados fictícios · nada é salvo</div>}
+
     </QueryClientProvider>
   );
 }

@@ -18,7 +18,7 @@ export const C = ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)", "var(--c
 export const axis = { tick: { fill: "var(--muted-foreground)", fontSize: 11 }, axisLine: false, tickLine: false } as const;
 
 export function Kpi({ title, m, format }: { title: string; m: Metric; format: (v: number) => string }) {
-  return <div className="rounded-xl border bg-card p-4 shadow-sm">
+  return <div className="surface surface-hover lab-rise rounded-xl border bg-card p-4">
     <p className="text-xs font-medium text-muted-foreground">{title}</p>
     {m.state === "ok" && m.value !== null
       ? <p className="mt-1 text-2xl font-semibold tabular-nums">{format(m.value)}</p>
@@ -35,9 +35,9 @@ export function Section({ title, children, note }: { title: string; children: Re
 }
 
 export function ChartCard({ title, note, children }: { title: string; note?: string; children: ReactNode }) {
-  return <div className="rounded-xl border bg-card p-4 shadow-sm">
-    <p className="font-medium">{title}</p>{note && <p className="text-xs text-muted-foreground">{note}</p>}
-    <div className="mt-3 h-[280px]"><ClientOnly fallback={<div className="h-full rounded-lg bg-muted/40" />}><ResponsiveContainer width="100%" height="100%">{children as ReactElement}</ResponsiveContainer></ClientOnly></div>
+  return <div className="surface lab-rise rounded-2xl border bg-card p-5">
+    <p className="font-semibold tracking-tight">{title}</p>{note && <p className="mt-0.5 text-xs text-muted-foreground">{note}</p>}
+    <div className="mt-4 h-[280px]"><ClientOnly fallback={<div className="lab-skeleton h-full rounded-xl" />}><ResponsiveContainer width="100%" height="100%">{children as ReactElement}</ResponsiveContainer></ClientOnly></div>
   </div>;
 }
 

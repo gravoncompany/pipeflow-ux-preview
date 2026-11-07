@@ -1,6 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useState, type ComponentType, type ReactNode } from "react";
 import { Menu } from "lucide-react";
+import { motion } from "motion/react";
 import { CrmSidebar } from "@/components/crm/CrmSidebar";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -28,11 +29,11 @@ export { isAreaItemActive };
 function AreaMenu({ title, groups, path, onNavigate }: { title: string; groups: readonly AreaMenuGroup[]; path: string; onNavigate?: () => void }) {
   return (
     <nav className="flex min-h-0 flex-1 flex-col" aria-label={`Menu de ${title}`}>
-      <p className="mb-3 px-2 text-sm font-semibold">{title}</p>
+      <p className="mb-4 px-2.5 text-base font-semibold tracking-tight">{title}</p>
       <div className="space-y-4">
         {groups.map((group, gi) => (
           <div key={group.label ?? gi}>
-            {group.label && <p className="mb-1 px-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">{group.label}</p>}
+            {group.label && <p className="mb-1.5 px-2.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground/80">{group.label}</p>}
             <ul className="space-y-0.5">
               {group.items.map((item) => {
                 const active = isAreaItemActive(item, path);
@@ -44,12 +45,16 @@ function AreaMenu({ title, groups, path, onNavigate }: { title: string; groups: 
                       onClick={onNavigate}
                       aria-current={active ? "page" : undefined}
                       className={cn(
-                        "flex w-full items-center gap-2.5 rounded-md px-2 py-2 text-left text-sm transition-colors",
-                        active ? "bg-primary text-primary-foreground" : "text-foreground/80 hover:bg-muted",
+                        "group relative flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-sm transition-colors duration-200",
+                        active ? "font-medium text-primary" : "text-foreground/70 hover:text-foreground",
                       )}
                     >
-                      <item.icon className="size-4 shrink-0" />
-                      <span className="min-w-0 truncate">{item.label}</span>
+                      {active
+                        ? <motion.span layoutId={`lab-subnav-${title}`} className="lab-subnav-active absolute inset-0 rounded-lg" transition={{ type: "spring", stiffness: 480, damping: 38 }} aria-hidden />
+                        : <span className="absolute inset-0 rounded-lg transition-colors duration-200 group-hover:bg-muted/70" aria-hidden />}
+                      {active && <motion.span layoutId={`lab-subnav-bar-${title}`} className="absolute inset-y-1.5 left-0 w-[3px] rounded-r-full bg-primary" aria-hidden />}
+                      <item.icon className={cn("relative size-4 shrink-0 transition-transform duration-300", !active && "group-hover:scale-110")} />
+                      <span className="relative min-w-0 truncate">{item.label}</span>
                     </Link>
                   </li>
                 );
@@ -82,7 +87,7 @@ export function AreaLayout({ title, groups, children, onLogout, className }: { t
   return (
     <div className={cn("flex min-h-screen bg-background", className)}>
       <CrmSidebar onLogout={onLogout} />
-      <aside className="hidden w-60 shrink-0 flex-col overflow-y-auto border-r bg-card px-3 py-5 lg:flex" aria-label={`Menu de ${menuTitle}`}>
+      <aside className="glass sticky top-0 hidden h-dvh max-h-dvh w-60 shrink-0 flex-col self-start overflow-y-auto border-r px-3 py-6 lg:flex" aria-label={`Menu de ${menuTitle}`}>
         <AreaMenu title={menuTitle} groups={menuGroups} path={path} />
       </aside>
       <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
@@ -97,7 +102,7 @@ export function AreaLayout({ title, groups, children, onLogout, className }: { t
           <span className="min-w-0 truncate font-semibold">{currentLabel}</span>
         </div>
         {trail.length > 1 && (
-          <nav aria-label="Você está em" className="finance-no-print hidden shrink-0 items-center gap-1 border-b bg-card/60 px-8 py-2 pr-48 text-xs text-muted-foreground lg:flex">
+          <nav aria-label="Você está em" className="glass finance-no-print sticky top-0 z-30 hidden shrink-0 items-center gap-1 border-b border-border/60 px-8 py-2.5 pr-48 text-xs text-muted-foreground lg:flex">
             {trail.map((t, i) => (
               <span key={`${t.label}-${i}`} className="inline-flex items-center gap-1">
                 {i > 0 && <ChevronRight className="size-3" aria-hidden />}
@@ -106,7 +111,8 @@ export function AreaLayout({ title, groups, children, onLogout, className }: { t
             ))}
           </nav>
         )}
-        {children}
+        {/* Transição suave a cada troca de tela. */}
+        <div key={path} className="lab-rise flex min-h-0 min-w-0 flex-1 flex-col">{children}</div>
       </div>
     </div>
   );

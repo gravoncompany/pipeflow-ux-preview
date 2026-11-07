@@ -27,12 +27,12 @@ export function DailyBrief({ awaiting, overdueReturns }: { awaiting: number | nu
   const greeting = hour < 12 ? "Bom dia" : hour < 18 ? "Boa tarde" : "Boa noite";
   return (
     <section aria-labelledby="brief" className="space-y-3">
-      <h2 id="brief" className="text-lg font-semibold">{greeting}! Isto pede atenção hoje</h2>
-      <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
-        <Link to="/whatsapp" className="block"><KpiCard icon={<MessageCircle className="size-3.5" />} label="Leads aguardando resposta" value={awaiting ?? "—"} tone={awaiting ? "warning" : "success"} hint="Abrir conversas" /></Link>
-        <Link to="/" className="block"><KpiCard icon={<AlarmClock className="size-3.5" />} label="Retornos atrasados" value={overdueReturns ?? "—"} tone={overdueReturns ? "danger" : "success"} hint="Abrir pipeline" /></Link>
-        <Link to="/financeiro/recebimentos" search={{ situacao: "atrasado" }} className="block"><KpiCard icon={<AlertTriangle className="size-3.5" />} label="Cobranças atrasadas" value={queue ? currency(queue.totals.overdue / 100) : "—"} tone={queue?.overdue.length ? "danger" : "success"} hint={queue ? `${queue.overdue.length} cobrança(s) · ${queue.dueSoon.length} vencem em 7 dias` : "Requer acesso ao financeiro"} /></Link>
-        <Link to="/pos-venda/renovacoes" className="block"><KpiCard icon={<CalendarClock className="size-3.5" />} label="Renovações em 30 dias" value={renewals ?? "—"} tone={renewals ? "warning" : "default"} hint="Contratos a renovar" /></Link>
+      <h2 id="brief" className="text-sm font-semibold uppercase tracking-[0.14em] text-muted-foreground">{greeting}! Isto pede atenção hoje</h2>
+      <div className="lab-stagger grid grid-cols-2 gap-3 xl:grid-cols-4">
+        <Link to="/whatsapp" className="block rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring lab-link-card"><KpiCard icon={<MessageCircle className="size-3.5" />} label="Leads aguardando resposta" value={awaiting ?? "—"} tone={awaiting ? "warning" : "success"} hint="Abrir conversas" /></Link>
+        <Link to="/" className="block rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring lab-link-card"><KpiCard icon={<AlarmClock className="size-3.5" />} label="Retornos atrasados" value={overdueReturns ?? "—"} tone={overdueReturns ? "danger" : "success"} hint="Abrir pipeline" /></Link>
+        <Link to="/financeiro/recebimentos" search={{ situacao: "atrasado" }} className="block rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring lab-link-card"><KpiCard icon={<AlertTriangle className="size-3.5" />} label="Cobranças atrasadas" value={queue ? currency(queue.totals.overdue / 100) : "—"} tone={queue?.overdue.length ? "danger" : "success"} hint={queue ? `${queue.overdue.length} cobrança(s) · ${queue.dueSoon.length} vencem em 7 dias` : "Requer acesso ao financeiro"} /></Link>
+        <Link to="/pos-venda/renovacoes" className="block rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring lab-link-card"><KpiCard icon={<CalendarClock className="size-3.5" />} label="Renovações em 30 dias" value={renewals ?? "—"} tone={renewals ? "warning" : "default"} hint="Contratos a renovar" /></Link>
       </div>
     </section>
   );

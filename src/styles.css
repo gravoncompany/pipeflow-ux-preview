@@ -304,3 +304,81 @@ body:has(.finance-theme) [aria-label="Abrir chat da Gravon AI"] {
 
 /* Pipeline: o sino fica no cabeçalho (ao lado de Atualizar); só a foto de perfil é fixa. */
 .crm-sidebar + :is(main, div) > header.pipeline-header { padding-right: 4.5rem; }
+
+/* ============================================================================
+   LAB · Design moderno (pipeflow-ux-preview)
+   Mesma paleta do Pipeflow; profundidade, gradientes suaves e movimento.
+   Todo movimento respeita prefers-reduced-motion.
+   ========================================================================== */
+:root {
+  --brand-gradient: linear-gradient(135deg, oklch(0.6 0.2 258) 0%, var(--primary) 55%, oklch(0.46 0.17 262) 100%);
+  --brand-glow: color-mix(in oklab, var(--primary) 35%, transparent);
+  --surface-shadow: 0 1px 2px rgb(15 23 42 / 0.04), 0 4px 16px -6px rgb(15 23 42 / 0.08);
+  --surface-shadow-hover: 0 2px 4px rgb(15 23 42 / 0.05), 0 14px 32px -12px rgb(15 23 42 / 0.18);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+.dark {
+  --surface-shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 4px 16px -6px rgb(0 0 0 / 0.5);
+  --surface-shadow-hover: 0 2px 4px rgb(0 0 0 / 0.35), 0 14px 32px -12px rgb(0 0 0 / 0.6);
+}
+
+/* Fundo da aplicação: malha de luz azul muito sutil, fixa. */
+body {
+  background-image:
+    radial-gradient(1200px 600px at 100% -10%, color-mix(in oklab, var(--primary) 7%, transparent), transparent 60%),
+    radial-gradient(900px 500px at -10% 110%, color-mix(in oklab, var(--chart-2) 8%, transparent), transparent 60%);
+  background-attachment: fixed;
+}
+
+.btn-brand { background-image: var(--brand-gradient); background-color: var(--primary); }
+.text-gradient-brand { background-image: var(--brand-gradient); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+/* Superfícies (cartões): sombra em camadas e elevação ao passar o mouse. */
+.surface { box-shadow: var(--surface-shadow); transition: box-shadow .3s var(--ease-out-expo), transform .3s var(--ease-out-expo), border-color .3s; }
+.surface-hover:hover { box-shadow: var(--surface-shadow-hover); transform: translateY(-2px); border-color: color-mix(in oklab, var(--primary) 30%, var(--border)); }
+.glass { background: color-mix(in oklab, var(--card) 72%, transparent); backdrop-filter: blur(14px) saturate(1.4); -webkit-backdrop-filter: blur(14px) saturate(1.4); }
+
+/* Entrada das telas e dos blocos (cascata). */
+@keyframes lab-rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes lab-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes lab-shimmer { from { background-position: -200% 0; } to { background-position: 200% 0; } }
+@keyframes lab-pulse-ring { 0% { box-shadow: 0 0 0 0 var(--brand-glow); } 70% { box-shadow: 0 0 0 10px transparent; } 100% { box-shadow: 0 0 0 0 transparent; } }
+@keyframes lab-float { 0%, 100% { transform: translate3d(0, 0, 0); } 50% { transform: translate3d(0, -14px, 0); } }
+.lab-rise { animation: lab-rise .55s var(--ease-out-expo) both; animation-delay: calc(var(--i, 0) * 60ms); }
+.lab-fade { animation: lab-fade .4s ease-out both; }
+.lab-pulse { animation: lab-pulse-ring 2.4s ease-out infinite; }
+.lab-float { animation: lab-float 9s ease-in-out infinite; }
+.lab-skeleton { background: linear-gradient(90deg, var(--muted) 25%, color-mix(in oklab, var(--muted) 55%, var(--card)) 50%, var(--muted) 75%); background-size: 200% 100%; animation: lab-shimmer 1.6s linear infinite; }
+/* Cartões dentro de grades entram em cascata automaticamente. */
+.lab-stagger > * { animation: lab-rise .55s var(--ease-out-expo) both; }
+.lab-stagger > *:nth-child(2) { animation-delay: 50ms; } .lab-stagger > *:nth-child(3) { animation-delay: 100ms; }
+.lab-stagger > *:nth-child(4) { animation-delay: 150ms; } .lab-stagger > *:nth-child(5) { animation-delay: 200ms; }
+.lab-stagger > *:nth-child(6) { animation-delay: 250ms; } .lab-stagger > *:nth-child(7) { animation-delay: 300ms; }
+.lab-stagger > *:nth-child(n+8) { animation-delay: 350ms; }
+
+/* Menu lateral: fundo com profundidade e brilho no topo. */
+.lab-sidebar {
+  background:
+    radial-gradient(140% 50% at 0% 0%, color-mix(in oklab, var(--sidebar-primary) 28%, transparent), transparent 60%),
+    radial-gradient(120% 40% at 100% 100%, color-mix(in oklab, var(--sidebar-primary) 14%, transparent), transparent 60%),
+    var(--sidebar);
+}
+.lab-nav-active {
+  background-image: linear-gradient(135deg, color-mix(in oklab, var(--sidebar-primary) 100%, white 8%), color-mix(in oklab, var(--sidebar-primary) 80%, black 10%));
+  box-shadow: 0 8px 24px -8px color-mix(in oklab, var(--sidebar-primary) 80%, transparent), inset 0 1px 0 rgb(255 255 255 / 0.18);
+}
+.lab-subnav-active {
+  background: color-mix(in oklab, var(--primary) 10%, var(--card));
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--primary) 22%, transparent);
+}
+
+/* Barra de rolagem fina e discreta em toda a aplicação. */
+* { scrollbar-width: thin; scrollbar-color: color-mix(in oklab, var(--muted-foreground) 30%, transparent) transparent; }
+
+@media (prefers-reduced-motion: reduce) {
+  .lab-rise, .lab-fade, .lab-pulse, .lab-float, .lab-skeleton, .lab-stagger > * { animation: none !important; }
+  .surface, .surface-hover:hover { transition: none; transform: none; }
+}
+@keyframes lab-draw { to { stroke-dashoffset: 0; } }
+.lab-link-card:hover > * { box-shadow: var(--surface-shadow-hover); transform: translateY(-2px); border-color: color-mix(in oklab, var(--primary) 30%, var(--border)); }
+@media (prefers-reduced-motion: reduce) { .lab-link-card:hover > * { transform: none; } }

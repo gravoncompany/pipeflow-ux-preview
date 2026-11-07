@@ -79,7 +79,7 @@ function OverviewPage() {
   return <DashboardLayout>
     <main className="min-w-0 flex-1 space-y-8 px-4 py-6 md:px-8">
       <header className="flex flex-wrap items-end justify-between gap-4 md:pr-28">
-        <div><h1 className="text-2xl font-bold md:text-3xl">Visão geral</h1><p className="mt-1 text-sm text-muted-foreground">Gravon Company · Crescimento e carteira de clientes</p></div>
+        <div><p suppressHydrationWarning className="text-xs font-medium uppercase tracking-[0.16em] text-primary">{new Date().toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" })}</p><h1 className="mt-1 text-3xl font-semibold tracking-tight md:text-4xl">Visão <span className="text-gradient-brand">geral</span></h1><p className="mt-1 text-sm text-muted-foreground">Gravon Company · Crescimento e carteira de clientes</p></div>
       </header>
 
       <DailyBrief awaiting={day ? day.awaiting.length : null} overdueReturns={day ? day.overdue.length : null} />
